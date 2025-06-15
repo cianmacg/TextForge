@@ -11,7 +11,7 @@ public class Shingle {
         }
 
         int i = 0;
-        while(i < words.length - window + 1) {
+        while(i <= words.length - window) {
             StringBuilder sb = new StringBuilder();
 
             for(int j = 0; j < (window - 1); j++) {
