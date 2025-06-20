@@ -21,7 +21,7 @@ public class BPE {
             }
         }
 
-        int max_iter = 100;
+        int max_iter = vocab_size + 100;
         int iter = 0;
         while(vocabulary.size() < vocab_size && iter < max_iter) {
             expand(corpus);
@@ -37,20 +37,10 @@ public class BPE {
         try(var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             for(String text: corpus) {
                 scope.fork(() -> {
-                    int start = 0;
-
-                    while(start<text.length() - 1) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(text.charAt(start));
-                        while(vocabulary.contains(sb.toString()) && start < text.length() - 1) {
-                            start++;
-                            sb.append(text.charAt(start));
-                        }
-
-                        candidates.put(sb.toString(), candidates.computeIfAbsent(sb.toString(), k -> 0) + 1);
+                    String[] tokens = tokenise(text);
+                    for(int i = 0; i<tokens.length - 1; i++) {
+                        candidates.merge(tokens[i] + tokens[i+1], 1, Integer::sum);
                     }
-
-
                     return null;
                 });
             }
@@ -61,6 +51,11 @@ public class BPE {
             System.err.println("Error: " + e);
         }
 
+        if (candidates.isEmpty()) {
+            return;
+        }
+
+        System.out.println("Attempting to add: " + Collections.max(candidates.entrySet(), Map.Entry.comparingByValue()).getKey());
         vocabulary.add(Collections.max(candidates.entrySet(), Map.Entry.comparingByValue()).getKey());
     }
 
@@ -70,20 +65,23 @@ public class BPE {
 
     public String[] tokenise(String text) {
         ArrayList<String> tokens = new ArrayList<>();
+        int start = 0;
 
-        int pos = 0;
-        while(pos < text.length() - 1) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(text.charAt(pos));
+        while (start < text.length()) {
+            int end = text.length();
 
-            while(vocabulary.contains(sb.toString() + text.charAt(pos + 1)) && pos < text.length() - 1) {
-                pos++;
-                sb.append(text.charAt(pos));
+            while (end > start && !vocabulary.contains(text.substring(start, end))) {
+                end--;
             }
 
-            tokens.add(sb.toString());
-            pos++;
+            if (end == start) {
+                end = start + 1;
+            }
+
+            tokens.add(text.substring(start, end));
+            start = end;
         }
+
 
         return tokens.toArray(new String[tokens.size()]);
     }

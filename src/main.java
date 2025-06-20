@@ -12,7 +12,7 @@ public class main {
         BPE tokeniser = new BPE();
         tokeniser.train(corpus, 60);
 
-        String s = "A simple test of tokenisation. Ideally we should see some tokens here with a length greater than 1. There should really be many.";
+        String s = "A simple test of tokenisation. Ideally we should see some tokens here with a length greater than 1. There should really be many. And another.";
 
         String[] output = tokeniser.tokenise(s);
 
