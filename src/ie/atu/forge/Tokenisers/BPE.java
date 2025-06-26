@@ -63,6 +63,13 @@ public class BPE {
         return vocabulary;
     }
 
+    /*
+    In my mind, searching for tokens for left to right (i.e. expanding a substring from the left to right) would be the quickest way to parse a string into tokens.
+    However, I couldn't get this to work. It would generally fail to find tokens greater than 2 characters.
+    As a result, this implementation starts with a substring the size of the full string, and removes a character from the right (shrinking the substring) until the substring appears
+    in the token list (i.e. the substring is a token).
+    It then repeats, with the start of the string now being the position after the end of the last token, until all tokens have been found.
+     */
     public String[] tokenise(String text) {
         ArrayList<String> tokens = new ArrayList<>();
         int start = 0;
