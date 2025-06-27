@@ -180,8 +180,6 @@ public class Porter {
     private static char[] step_2(char[] input) {
         String input_string = new String(input);
 
-        int i = 0;
-
         // Check for matching
         for(String ending: step_2_endings.keySet()) {
             if(input_string.contains(ending)) {
