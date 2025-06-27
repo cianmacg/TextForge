@@ -155,19 +155,11 @@ public class Porter {
         // Measure is what we will return, it is the count of consecutive VC in the word.
         int m = 0;
         // Finally count the 'VC' occurences.
-        char[] counted_chars = new char[4];
         int i = 0;
 
         // If the first character is a c, skip to the next one to begin counting.
         if (merged[0] == 'C') {
             i++;
-        }
-
-        counted_chars[i] = 'V';
-        counted_chars[i + 1] = 'C';
-
-        if (merged[merged.length - 1] == 'V') {
-            counted_chars[i + 2] = 'V';
         }
 
         while (i < merged.length - 1) {
