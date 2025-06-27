@@ -3,9 +3,19 @@ import ie.atu.forge.Tokenisers.BPE;
 
 public class main {
     public static void main(String[] args) {
-        String input = "Verbosity";
+        String[] input = {
+                "feed",
+                "agreed",
+                "plastered",
+                "bled",
+                "motoring",
+                "sing"
+        };
 
-        String stemmed_input = Porter.stem(input);
-        System.out.println(stemmed_input);
+        for(String i : input) {
+            String stemmed_input = Porter.stem(i);
+            System.out.println(stemmed_input);
+        }
+
     }
 }
