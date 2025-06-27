@@ -3,29 +3,14 @@ import ie.atu.forge.Stemmers.Porter;
 public class main {
     public static void main(String[] args) {
         String[] input = {
-                "relational",
-                "conditional",
-                "rational",
-                "valenci",
-                "hesitanci",
-                "digitizer",
-                "digitiser",
-                "conformabli",
-                "radicalli",
-                "differentli",
-                "vileli",
-                "analogousli",
-                "vietnamization",
-                "vietnamisation",
-                "predication",
-                "operator",
-                "feudalism",
-                "decisiveness",
-                "hopefulness",
-                "callousness",
-                "formaliti",
-                "sensitiviti",
-                "sensibiliti"
+                "triplicate",
+                "formative",
+                "formalize",
+                "formalise",
+                "electriciti",
+                "electrical",
+                "hopeful",
+                "goodness"
         };
 
         for(String i : input) {

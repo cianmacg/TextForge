@@ -9,6 +9,7 @@ public class Porter {
     Porter's stemmer to stem a single word.
      */
     private static final Map<String, String> step_2_endings = new HashMap<>();
+    private static final Map<String, String> step_3_endings = new HashMap<>();
 
     // Initialiser block to add endings to appropriate maps.
     static {
@@ -34,6 +35,15 @@ public class Porter {
         step_2_endings.put("aliti", "al");
         step_2_endings.put("iviti", "ive");
         step_2_endings.put("biliti", "ble");
+
+        step_3_endings.put("icate", "ic");
+        step_3_endings.put("ative", "");
+        step_3_endings.put("alize", "al");
+        step_3_endings.put("alise", "al");
+        step_3_endings.put("iciti", "ic");
+        step_3_endings.put("ical", "ic");
+        step_3_endings.put("ful", "");
+        step_3_endings.put("ness", "");
     }
 
 
@@ -41,7 +51,7 @@ public class Porter {
         StringBuilder result = new StringBuilder();
         char[] chars = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
-        result.append(step_2(step_1c(step_1b(step_1a(chars)))));
+        result.append(step_3(step_2(step_1c(step_1b(step_1a(chars))))));
 
         return result.toString();
     }
@@ -201,6 +211,28 @@ public class Porter {
         return input;
     }
 
+    /*
+    Same idea as step 2, but using different endings (i.e. a different map).
+     */
+    private static char[] step_3(char[] input) {
+        String input_string = new String(input);
+
+        for(String ending: step_3_endings.keySet()) {
+            if(input_string.contains(ending)) {
+                char[] stem = new char[input.length - ending.length()];
+                System.arraycopy(input, 0, stem, 0, stem.length);
+                if(measure(stem) > 0) {
+                    char[] new_ending = step_3_endings.get(ending).toCharArray();
+                    char[] result = new char[stem.length + new_ending.length];
+                    System.arraycopy(stem, 0, result, 0, stem.length);
+                    System.arraycopy(new_ending, 0, result, stem.length, new_ending.length);
+                    return result;
+                }
+            }
+        }
+
+        return input;
+    }
 
     private static int measure(char[] input) {
         char[] chars = Arrays.copyOf(input, input.length);
