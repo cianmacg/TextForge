@@ -1,10 +1,31 @@
 import ie.atu.forge.Stemmers.Porter;
-import ie.atu.forge.Tokenisers.BPE;
 
 public class main {
-    public static void main(String[] args) {
+    public main() {
         String[] input = {
-                "filling"
+                "relational",
+                "conditional",
+                "rational",
+                "valenci",
+                "hesitanci",
+                "digitizer",
+                "digitiser",
+                "conformabli",
+                "radicalli",
+                "differentli",
+                "vileli",
+                "analogousli",
+                "vietnamization",
+                "vietnamisation",
+                "predication",
+                "operator",
+                "feudalism",
+                "decisiveness",
+                "hopefulness",
+                "callousness",
+                "formaliti",
+                "sensitiviti",
+                "sensibiliti"
         };
 
         for(String i : input) {

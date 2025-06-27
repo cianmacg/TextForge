@@ -1,16 +1,47 @@
 package ie.atu.forge.Stemmers;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Porter {
     /*
     Porter's stemmer to stem a single word.
      */
+    private static final Map<String, String> step_2_endings = new HashMap<>();
+
+    // Initialiser block to add endings to appropriate maps.
+    static {
+        step_2_endings.put("ational", "ate");
+        step_2_endings.put("tional", "tion");
+        step_2_endings.put("enci", "ence");
+        step_2_endings.put("anci", "ance");
+        step_2_endings.put("izer", "ize");
+        step_2_endings.put("iser", "ise");
+        step_2_endings.put("abli", "able");
+        step_2_endings.put("alli", "al");
+        step_2_endings.put("entli", "ent");
+        step_2_endings.put("eli", "e");
+        step_2_endings.put("ousli", "ous");
+        step_2_endings.put("ization", "ize");
+        step_2_endings.put("isation", "ise");
+        step_2_endings.put("ation", "ate");
+        step_2_endings.put("ator", "ate");
+        step_2_endings.put("alism", "al");
+        step_2_endings.put("iveness", "ive");
+        step_2_endings.put("fulness", "ful");
+        step_2_endings.put("ousness", "ous");
+        step_2_endings.put("aliti", "al");
+        step_2_endings.put("iviti", "ive");
+        step_2_endings.put("biliti", "ble");
+    }
+
+
     public static String stem(String input) {
         StringBuilder result = new StringBuilder();
         char[] chars = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
-        result.append(step_1b(step_1a(chars)));
+        result.append(step_2(step_1c(step_1b(step_1a(chars)))));
 
         return result.toString();
     }
@@ -128,6 +159,50 @@ public class Porter {
 
         return input;
     }
+
+    private static char[] step_1c(char[] input) {
+        char[] result;
+
+        if(condition_v(input) && input[input.length - 1] == 'y') {
+            result = new char[input.length];
+            System.arraycopy(input, 0, result, 0, result.length);
+            result[result.length - 1] = 'i';
+            return result;
+        }
+
+        return input;
+    }
+
+    /*
+    Not sure the best way to go about doing this part. I'm sure efficiency will be suboptimal.
+    Thinking putting these into a map may be the best way to go.
+     */
+    private static char[] step_2(char[] input) {
+        String input_string = new String(input);
+
+        int i = 0;
+
+        // Check for matching
+        for(String ending: step_2_endings.keySet()) {
+            if(input_string.contains(ending)) {
+                char[] stem = new char[input.length - ending.length()];
+                System.arraycopy(input, 0, stem, 0, stem.length);
+
+                // If there is a match, make sure the measure of the stem is > 0
+                if(measure(stem) > 0) {
+                    char[] new_ending = step_2_endings.get(ending).toCharArray();
+                    char[] result = new char[stem.length + new_ending.length];
+                    System.arraycopy(stem, 0, result, 0, stem.length);
+                    System.arraycopy(new_ending, 0, result, stem.length, new_ending.length);
+                    return result;
+                }
+                break;
+            }
+        }
+
+        return input;
+    }
+
 
     private static int measure(char[] input) {
         char[] chars = Arrays.copyOf(input, input.length);
