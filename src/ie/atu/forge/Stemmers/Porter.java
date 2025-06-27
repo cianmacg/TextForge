@@ -1,5 +1,7 @@
 package ie.atu.forge.Stemmers;
 
+import java.util.Arrays;
+
 public class Porter {
     /*
     Porter's stemmer to stem a single word.
@@ -71,6 +73,7 @@ public class Porter {
             result = new char[input.length - 2];
             System.arraycopy(input, 0, result, 0, result.length);
             if(condition_v(result)) {
+                // In this case, a further rule is applied, sub_1b
                 result = sub_1b(result);
                 return result;
             }
@@ -82,6 +85,7 @@ public class Porter {
             result = new char[input.length - 3];
             System.arraycopy(input, 0, result, 0, result.length);
             if(condition_v(result)) {
+                // In this case, a further rule is applied, sub_1b
                 result = sub_1b(result);
                 return result;
             }
@@ -105,46 +109,55 @@ public class Porter {
         // If the ending is a double consonant that is not l, s, or z, make is a single letter (i.e. remove the final letter)
         char consonant = condition_d(input);
         // '!' indicates no double consonant.
-        if(consonant != '!') {
-            if(consonant == 'l' || consonant == 's' || consonant == 'z') {
-                return input;
-            }
-
+        if(consonant != '!' && consonant != 'l' && consonant != 's' && consonant != 'z') {
             result = new char[input.length - 1];
             System.arraycopy(input, 0, result, 0, result.length);
             return result;
+        }
+
+        // Finally, if measure == 1, and condition_o, is satisfied, append an 'e' to the end of the stem.
+        if(measure(input) == 1 && condition_o(input)) {
+            result = new char[input.length + 1];
+            System.arraycopy(input, 0, result, 0, input.length);
+            result[result.length - 1] = 'e';
+            return result;
+        } else {
+            System.out.println("Measure: " + measure(input));
+            System.out.println("Condition_o: " + condition_o(input));
         }
 
         return input;
     }
 
     private static int measure(char[] input) {
+        char[] chars = Arrays.copyOf(input, input.length);
+
         // First Pass. Change characters to 'C' for consonant or 'V' for vowel.
-        for (int i = 0; i < input.length; i++) {
-            if (input[i] == 'a' || input[i] == 'e' || input[i] == 'i' || input[i] == 'o' || input[i] == 'u') {
-                input[i] = 'V';
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == 'a' || chars[i] == 'e' || chars[i] == 'i' || chars[i] == 'o' || chars[i] == 'u') {
+                chars[i] = 'V';
             }
             // y is special. If it is preceded by a consonant, it is considered a vowel, otherwise it is a consonant.
-            else if (input[i] == 'y') {
-                if (i == 0 || input[i - 1] == 'V') {
-                    input[i] = 'C';
+            else if (chars[i] == 'y') {
+                if (i == 0 || chars[i - 1] == 'V') {
+                    chars[i] = 'C';
                 } else {
-                    input[i] = 'V';
+                    chars[i] = 'V';
                 }
             } else {
-                input[i] = 'C';
+                chars[i] = 'C';
             }
         }
 
-        char[] merged_chars = new char[input.length];
+        char[] merged_chars = new char[chars.length];
         int size = 0;
         // Second pass. Merge adjacent 'C' to a single 'C', same for 'V'.
-        merged_chars[size] = input[0];
-
-        for (int i = 1; i < input.length; i++) {
-            if (input[i - 1] != input[i]) {
+        merged_chars[size] = chars[0];
+        size++;
+        for (int i = 1; i < chars.length; i++) {
+            if (chars[i - 1] != chars[i]) {
+                merged_chars[size] = chars[i];
                 size++;
-                merged_chars[size] = input[i];
             }
         }
 

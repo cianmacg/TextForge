@@ -4,12 +4,7 @@ import ie.atu.forge.Tokenisers.BPE;
 public class main {
     public static void main(String[] args) {
         String[] input = {
-                "feed",
-                "agreed",
-                "plastered",
-                "bled",
-                "motoring",
-                "sing"
+                "filling"
         };
 
         for(String i : input) {
