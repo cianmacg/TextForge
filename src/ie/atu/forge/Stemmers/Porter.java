@@ -1,8 +1,10 @@
 package ie.atu.forge.Stemmers;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+/*
+Porter, M.F. (1980), "An algorithm for suffix stripping", Program: electronic library and information systems, Vol. 14 No. 3, pp. 130-137. https://doi.org/10.1108/eb046814
+ */
 
 public class Porter {
     /*
@@ -10,7 +12,7 @@ public class Porter {
      */
     private static final Map<String, String> step_2_endings = new HashMap<>();
     private static final Map<String, String> step_3_endings = new HashMap<>();
-    private static final Map<String, String> step_4_endings = new HashMap<>();
+    private static final Set<String> step_4_endings = new HashSet<>();
 
     // Initialiser block to add endings to appropriate maps.
     static {
@@ -49,26 +51,27 @@ public class Porter {
         step_3_endings.put("ness", "");
 
         // Must be measure > 1
-        step_4_endings.put("al", "");
-        step_4_endings.put("ance", "");
-        step_4_endings.put("ence", "");
-        step_4_endings.put("er", "");
-        step_4_endings.put("ic", "");
-        step_4_endings.put("able", "");
-        step_4_endings.put("ible", "");
-        step_4_endings.put("ant", "");
-        step_4_endings.put("ement", "");
-        step_4_endings.put("ment", "");
-        step_4_endings.put("end", "");
-        step_4_endings.put("ion", ""); // Also needs to satisfy ending with 's' or 't'
-        step_4_endings.put("ou", "");
-        step_4_endings.put("ism", "");
-        step_4_endings.put("ate", "");
-        step_4_endings.put("iti", "");
-        step_4_endings.put("ous", "");
-        step_4_endings.put("ive", "");
-        step_4_endings.put("ize", "");
-        step_4_endings.put("ise", "");
+        step_4_endings.add("al");
+        step_4_endings.add("ance");
+        step_4_endings.add("ence");
+        step_4_endings.add("er");
+        step_4_endings.add("ic");
+        step_4_endings.add("able");
+        step_4_endings.add("ible");
+        step_4_endings.add("ant");
+        step_4_endings.add("ement");
+        step_4_endings.add("ment");
+        step_4_endings.add("end");
+        step_4_endings.add("ion"); // Also needs to satisfy ending with 's' or 't'
+        step_4_endings.add("ou");
+        step_4_endings.add("ism");
+        step_4_endings.add("ate");
+        step_4_endings.add("iti");
+        step_4_endings.add("ous");
+        step_4_endings.add("ive");
+        step_4_endings.add("ize");
+        step_4_endings.add("ise");
+
     }
 
 
@@ -79,6 +82,15 @@ public class Porter {
         result.append(step_5b(step_5a(step_4(step_3(step_2(step_1c(step_1b(step_1a(chars)))))))));
 
         return result.toString();
+    }
+
+    public static String[] stem(String[] inputs) {
+        String[] stems = new String[inputs.length];
+
+        for(int i = 0; i < inputs.length; i++) {
+            stems[i] = stem(inputs[i]);
+        }
+        return stems;
     }
 
     private static char[] step_1a(char[] input) {
@@ -263,7 +275,7 @@ public class Porter {
     private static char[] step_4(char[] input) {
         String input_string = new String(input);
 
-        for(String ending: step_4_endings.keySet()) {
+        for(String ending: step_4_endings.toArray(new String[0])) {
             int input_len = input_string.length();
             int ending_len = ending.length();
             if(input_len > ending_len && input_string.substring(input_len - ending_len).equals(ending)) {
@@ -367,12 +379,7 @@ public class Porter {
         return m;
     }
 
-    // Check if the stem ends with 's'.
-    private static boolean condition_s(char[] input) {
-        return input[input.length - 1] == 's';
-    }
-
-    // Alternate version of above to check if the stem ends with a specific letter.
+    // Check if the stem ends with a specific letter.
     private static boolean condition_s(char[] input, char letter) {
         return input[input.length - 1] == letter;
     }
@@ -392,7 +399,7 @@ public class Porter {
         return false;
     }
 
-    // Check if the stem ends with a double consonant (e.g., tt, ss, etc). Returns the consonant if true, returns '!' if false.
+    // Check if the stem ends with a double consonant (e.g., tt, ss, etc.). Returns the consonant if true, returns '!' if false.
     private static char condition_d(char[] input) {
         // Check if the stem ending is a repeated letter
         if(input[input.length - 1] == input[input.length - 2]) {

@@ -9,9 +9,10 @@ public class main {
                 "rolling"
         };
 
-        for(String i : input) {
-            String stemmed_input = Porter.stem(i);
-            System.out.println(stemmed_input);
+        String[] stems = Porter.stem(input);
+
+        for(String stem : stems) {
+            System.out.println(stem);
         }
 
     }
