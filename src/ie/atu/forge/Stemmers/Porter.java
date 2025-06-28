@@ -76,7 +76,7 @@ public class Porter {
         StringBuilder result = new StringBuilder();
         char[] chars = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
-        result.append(step_4(step_3(step_2(step_1c(step_1b(step_1a(chars)))))));
+        result.append(step_5b(step_5a(step_4(step_3(step_2(step_1c(step_1b(step_1a(chars)))))))));
 
         return result.toString();
     }
@@ -187,9 +187,6 @@ public class Porter {
             System.arraycopy(input, 0, result, 0, input.length);
             result[result.length - 1] = 'e';
             return result;
-        } else {
-            System.out.println("Measure: " + measure(input));
-            System.out.println("Condition_o: " + condition_o(input));
         }
 
         return input;
@@ -217,8 +214,9 @@ public class Porter {
 
         // Check for matching
         for(String ending: step_2_endings.keySet()) {
-            int len = input_string.length();
-            if(input_string.substring(len - ending.length()).equals(ending)) {
+            int input_len = input_string.length();
+            int ending_len = ending.length();
+            if(input_len > ending_len && input_string.substring(input_len - ending_len).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
 
@@ -244,8 +242,9 @@ public class Porter {
         String input_string = new String(input);
 
         for(String ending: step_3_endings.keySet()) {
-            int len = input_string.length();
-            if(input_string.substring(len - ending.length()).equals(ending)) {
+            int input_len = input_string.length();
+            int ending_len = ending.length();
+            if(input_len > ending_len && input_string.substring(input_len - ending_len).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
                 if(measure(stem) > 0) {
@@ -265,8 +264,9 @@ public class Porter {
         String input_string = new String(input);
 
         for(String ending: step_4_endings.keySet()) {
-            int len = input_string.length();
-            if(input_string.substring(len - ending.length()).equals(ending)) {
+            int input_len = input_string.length();
+            int ending_len = ending.length();
+            if(input_len > ending_len && input_string.substring(input_len - ending_len).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
                 if(measure(stem) > 1) {
@@ -278,6 +278,34 @@ public class Porter {
                     return stem;
                 }
             }
+        }
+
+        return input;
+    }
+
+    private static char[] step_5a(char[] input) {
+        if(input[input.length - 1] == 'e') {
+            char[] stem = new char[input.length - 1];
+            System.arraycopy(input, 0, stem, 0, stem.length);
+            int m = measure(stem);
+            if(m > 1) {
+                return stem;
+            }
+            else if(m == 1 && !condition_o(stem)) {
+                return stem;
+            }
+        }
+        return input;
+    }
+
+    private static char[] step_5b(char[] input) {
+        char[] stem = new char[input.length - 1];
+        System.arraycopy(input, 0, stem, 0, stem.length);
+        int m = measure(stem);
+
+        // If measure > 1 and the word ends with a double 'l'
+        if(m > 1 && condition_d(input) == 'l') {
+            return stem;
         }
 
         return input;
