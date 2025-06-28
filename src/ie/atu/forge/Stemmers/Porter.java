@@ -6,6 +6,7 @@ import java.util.*;
 Porter, M.F. (1980), "An algorithm for suffix stripping", Program: electronic library and information systems, Vol. 14 No. 3, pp. 130-137. https://doi.org/10.1108/eb046814
  */
 
+// Implementation of Porter's stemmer based on the original paper.
 public class Porter {
     /*
     Porter's stemmer to stem a single word.
