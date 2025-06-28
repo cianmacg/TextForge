@@ -10,9 +10,11 @@ public class Porter {
      */
     private static final Map<String, String> step_2_endings = new HashMap<>();
     private static final Map<String, String> step_3_endings = new HashMap<>();
+    private static final Map<String, String> step_4_endings = new HashMap<>();
 
     // Initialiser block to add endings to appropriate maps.
     static {
+        // Must be measure > 0
         step_2_endings.put("ational", "ate");
         step_2_endings.put("tional", "tion");
         step_2_endings.put("enci", "ence");
@@ -36,6 +38,7 @@ public class Porter {
         step_2_endings.put("iviti", "ive");
         step_2_endings.put("biliti", "ble");
 
+        // Must be measure > 0
         step_3_endings.put("icate", "ic");
         step_3_endings.put("ative", "");
         step_3_endings.put("alize", "al");
@@ -44,6 +47,28 @@ public class Porter {
         step_3_endings.put("ical", "ic");
         step_3_endings.put("ful", "");
         step_3_endings.put("ness", "");
+
+        // Must be measure > 1
+        step_4_endings.put("al", "");
+        step_4_endings.put("ance", "");
+        step_4_endings.put("ence", "");
+        step_4_endings.put("er", "");
+        step_4_endings.put("ic", "");
+        step_4_endings.put("able", "");
+        step_4_endings.put("ible", "");
+        step_4_endings.put("ant", "");
+        step_4_endings.put("ement", "");
+        step_4_endings.put("ment", "");
+        step_4_endings.put("end", "");
+        step_4_endings.put("ion", ""); // Also needs to satisfy ending with 's' or 't'
+        step_4_endings.put("ou", "");
+        step_4_endings.put("ism", "");
+        step_4_endings.put("ate", "");
+        step_4_endings.put("iti", "");
+        step_4_endings.put("ous", "");
+        step_4_endings.put("ive", "");
+        step_4_endings.put("ize", "");
+        step_4_endings.put("ise", "");
     }
 
 
@@ -51,7 +76,7 @@ public class Porter {
         StringBuilder result = new StringBuilder();
         char[] chars = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
-        result.append(step_3(step_2(step_1c(step_1b(step_1a(chars))))));
+        result.append(step_4(step_3(step_2(step_1c(step_1b(step_1a(chars)))))));
 
         return result.toString();
     }
@@ -192,7 +217,8 @@ public class Porter {
 
         // Check for matching
         for(String ending: step_2_endings.keySet()) {
-            if(input_string.contains(ending)) {
+            int len = input_string.length();
+            if(input_string.substring(len - ending.length()).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
 
@@ -218,7 +244,8 @@ public class Porter {
         String input_string = new String(input);
 
         for(String ending: step_3_endings.keySet()) {
-            if(input_string.contains(ending)) {
+            int len = input_string.length();
+            if(input_string.substring(len - ending.length()).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
                 if(measure(stem) > 0) {
@@ -227,6 +254,28 @@ public class Porter {
                     System.arraycopy(stem, 0, result, 0, stem.length);
                     System.arraycopy(new_ending, 0, result, stem.length, new_ending.length);
                     return result;
+                }
+            }
+        }
+
+        return input;
+    }
+
+    private static char[] step_4(char[] input) {
+        String input_string = new String(input);
+
+        for(String ending: step_4_endings.keySet()) {
+            int len = input_string.length();
+            if(input_string.substring(len - ending.length()).equals(ending)) {
+                char[] stem = new char[input.length - ending.length()];
+                System.arraycopy(input, 0, stem, 0, stem.length);
+                if(measure(stem) > 1) {
+                    // For the "ion" entry, the stem must end with 's' or 't', otherwise it is ignored.
+                    if(ending.equals("ion")) {
+                        if(!condition_s(stem,'s') && !condition_s(stem,'t')) break;
+                    }
+
+                    return stem;
                 }
             }
         }
