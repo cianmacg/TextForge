@@ -1,3 +1,4 @@
+import ie.atu.forge.Stemmers.Lovin;
 import ie.atu.forge.Stemmers.Porter;
 
 public class main {
@@ -9,11 +10,8 @@ public class main {
                 "rolling"
         };
 
-        String[] stems = Porter.stem(input);
+        String stem = Lovin.stem("automatically");
 
-        for(String stem : stems) {
-            System.out.println(stem);
-        }
-
+        System.out.println(stem);
     }
 }
