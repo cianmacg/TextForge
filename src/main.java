@@ -4,14 +4,20 @@ import ie.atu.forge.Stemmers.Porter;
 public class main {
     public static void main(String[] args) {
         String[] input = {
-                "control",
-                "controlling",
-                "roll",
-                "rolling"
+                "rubbing",
+                "embedded",
+                "believe",
+                "induction",
+                "consumption"
         };
 
-        String stem = Lovin.stem("automatically");
+/*        String stem = Lovin.stem("rubbing");
+        System.out.println(stem);*/
+        String[] stems = Lovin.stem(input);
 
-        System.out.println(stem);
+        for(String stem : stems) {
+            System.out.println(stem);
+        }
+
     }
 }
