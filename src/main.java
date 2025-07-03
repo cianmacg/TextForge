@@ -3,12 +3,43 @@ import ie.atu.forge.Stemmers.Porter;
 
 public class main {
     public static void main(String[] args) {
-        String[] input = {
+/*        String[] input = {
                 "rubbing",
-                "embedded",
                 "believe",
                 "induction",
-                "consumption"
+                "comsumption",
+                "absorption",
+                "recursive",
+                "administrate",
+                "parametric",
+                "dissolved",
+                "angular",
+                "vibex",
+                "index",
+                "apex",
+                "cortex",
+                "anthrax",
+                "matrix",
+                "persuade",
+                "evade",
+                "decide",
+                "elide",
+                "deride",
+                "expand",
+                "defend",
+                "respond",
+                "collude",
+                "obtrude",
+                "adhere",
+                "remit",
+                "extent",
+                "converted",
+                "parenthetic",
+                "analytic",
+                "analyzed"
+        };*/
+        String[] input = {
+                "movement"
         };
 
 /*        String stem = Lovin.stem("rubbing");
