@@ -62,7 +62,7 @@ public class Porter {
         step_4_endings.add("ant");
         step_4_endings.add("ement");
         step_4_endings.add("ment");
-        step_4_endings.add("end");
+        step_4_endings.add("ent");
         step_4_endings.add("ion"); // Also needs to satisfy ending with 's' or 't'
         step_4_endings.add("ou");
         step_4_endings.add("ism");
