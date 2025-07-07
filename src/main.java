@@ -1,5 +1,8 @@
 import ie.atu.forge.Normalisation.Scrubber;
+import ie.atu.forge.SetSimilarity.AlignmentFree.Canberra;
 import ie.atu.forge.SetSimilarity.AlignmentFree.Cosine;
+import ie.atu.forge.SetSimilarity.AlignmentFree.Euclidean;
+import ie.atu.forge.SetSimilarity.AlignmentFree.Manhattan;
 import ie.atu.forge.Tokenisers.Ngram;
 import ie.atu.forge.Vectorisers.BagOfWords;
 
@@ -22,7 +25,7 @@ public class main {
         b3.addBulk(t3);
 
 
-        double similarity = Cosine.similarity(b1.getBag(), b3.getBag());
+        double similarity = Manhattan.distance(b1.getBag(), b2.getBag());
 
         System.out.println(similarity);
     }
