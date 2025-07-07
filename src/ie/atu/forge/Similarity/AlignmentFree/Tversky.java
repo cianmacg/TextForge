@@ -1,4 +1,4 @@
-package ie.atu.forge.SetSimilarity.AlignmentFree;
+package ie.atu.forge.Similarity.AlignmentFree;
 
 import ie.atu.forge.Vectorisers.BagOfWords;
 public class Tversky {

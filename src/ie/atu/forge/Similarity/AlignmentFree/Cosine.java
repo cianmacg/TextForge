@@ -1,4 +1,4 @@
-package ie.atu.forge.SetSimilarity.AlignmentFree;
+package ie.atu.forge.Similarity.AlignmentFree;
 
 import java.util.*;
 

@@ -1,6 +1,6 @@
-package ie.atu.forge.SetSimilarity.AlignmentFree;
+package ie.atu.forge.Similarity.AlignmentFree;
 
-public class SorensenDice {
+public class Jaccard {
     public static double distance() {
         return 0.0d;
     }

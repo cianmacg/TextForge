@@ -1,9 +1,5 @@
 import ie.atu.forge.Normalisation.Scrubber;
-import ie.atu.forge.SetSimilarity.AlignmentFree.Canberra;
-import ie.atu.forge.SetSimilarity.AlignmentFree.Cosine;
-import ie.atu.forge.SetSimilarity.AlignmentFree.Euclidean;
-import ie.atu.forge.SetSimilarity.AlignmentFree.Manhattan;
-import ie.atu.forge.Tokenisers.Ngram;
+import ie.atu.forge.Similarity.AlignmentFree.Manhattan;
 import ie.atu.forge.Vectorisers.BagOfWords;
 
 public class main {
