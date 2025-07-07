@@ -12,10 +12,14 @@ public class BagOfWords {
         bag.put(word, bag.computeIfAbsent(word, k -> 0) + 1);
     }
 
-    public void addBulk(String[] words) {
-        for (String word : words) {
-            add(word);
+    public void addBulk(String[] tokens) {
+        for (String token : tokens) {
+            add(token);
         }
+    }
+
+    public Map<String, Integer> getBag() {
+        return bag;
     }
 
     public Set<String> vocabulary() {
