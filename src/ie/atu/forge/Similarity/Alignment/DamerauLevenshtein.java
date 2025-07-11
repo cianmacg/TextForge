@@ -1,21 +1,12 @@
 package ie.atu.forge.Similarity.Alignment;
 
-// I used this for reference: https://www.geeksforgeeks.org/dsa/introduction-to-levenshtein-distance/
-public class Levenshtein {
-    /*
-     * Levenshtein distance includes substitutions, insertions and deletions.
-     * Can handle variable string lengths.
-     */
+// Extension of Levenshtein distance that also measures transpositions. A transposition occurs between adjacent characters.
+public class DamerauLevenshtein {
     public static int distance(String s1, String s2) {
         return distance(s1.toCharArray(), s2.toCharArray());
     }
 
-    /*
-     * I'm using the character array representations of the strings here, as there will be many function calls to .charAt otherwise. I am assuming this improves performance.
-     * There is another possible implementation which reduces space complexity by only tracking the current and previous rows (since anything else is never really used).
-     * May change to this later.
-     */
-    public static int distance(char[] s1 , char[] s2) {        
+    public static int distance(char[] s1 , char[] s2) {
         int m = s1.length;
         int n = s2.length;
 
@@ -40,16 +31,24 @@ public class Levenshtein {
         // Fill in the table
         for(int i = 1; i <= m; i++) {
             for(int j = 1; j <= n; j++) {
-                if(s1[i-1] == s2[j-1]) {
-                    matrix[i][j] = matrix[i-1][j-1]; // no cost
+                if(s1[i - 1] == s2[j - 1]) {
+                    matrix[i][j] = matrix[i - 1][j - 1]; // no cost
                 } else {
                     matrix[i][j] = 1 + Math.min(
-                            matrix[i-1][j],     // deletion
+                            matrix[i - 1][j],     // deletion
                             Math.min(
-                                    matrix[i][j-1], // insertion
-                                    matrix[i-1][j-1] // substitution
+                                    matrix[i][j - 1], // insertion
+                                    matrix[i - 1][j - 1] // substitution
                             )
                     );
+
+                    // Transpositions are checked after performing the normal deletion/insertion/substitution phase
+                    if((i > 1) && (j > 1) && (s1[i - 1] == s2[j - 2]) && (s1[i - 2] == s2[j - 1])) {
+                        matrix[i][j] = Math.min(
+                                matrix[i][j],
+                                matrix[i - 2][j - 2] + 1
+                        );
+                    }
                 }
             }
         }
