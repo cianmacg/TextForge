@@ -3,7 +3,6 @@ package ie.atu.forge.Similarity.AlignmentFree;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import ie.atu.forge.Similarity.AlignmentFree.Chebyshev;
 
 
 public class Minkowski {
