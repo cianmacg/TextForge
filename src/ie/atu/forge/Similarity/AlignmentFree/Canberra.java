@@ -9,11 +9,26 @@ public class Canberra {
         Set<String> vocabulary = new HashSet<>(s1.keySet());
         vocabulary.addAll(s2.keySet());
 
-        double result = 0;
+        int[] v1 = new int[vocabulary.size()], v2 = new int[vocabulary.size()];
 
+        int i = 0;
+        // Populate the count vectors.
         for(String token: vocabulary) {
-            int d1 = s1.getOrDefault(token, 0);
-            int d2 = s2.getOrDefault(token, 0);
+            v1[i] = s1.getOrDefault(token, 0);
+            v2[i] = s2.getOrDefault(token, 0);
+        }
+
+        return distance(v1, v2);
+    }
+
+    public static double distance(int[] v1, int[] v2) {
+        if (v1.length != v2.length) return -1;
+
+        double result = 0.0d;
+
+        for (int i = 0; i < v1.length; i++) {
+            int d1 = v1[i];
+            int d2 = v2[i];
 
             result += (double) ((d1 - d2) * (d1 - d2)) / (Math.abs(d1) + Math.abs(d2));
         }
