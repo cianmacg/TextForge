@@ -22,6 +22,7 @@ public class Cosine {
         return dotProd / Math.sqrt(mag1 * mag2);
     }
 
+    // From maps, create count vectors.
     public static double similarity(Map<String, Integer> s1, Map<String, Integer> s2) {
         Set<String> vocabulary = new HashSet<>(s1.keySet());
         vocabulary.addAll(s2.keySet());

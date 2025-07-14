@@ -5,6 +5,23 @@ import java.util.Map;
 import java.util.Set;
 
 public class Canberra {
+    public static double distance(int[] v1, int[] v2) {
+        if (v1.length != v2.length) return -1;
+
+        double result = 0.0d;
+
+        for (int i = 0; i < v1.length; i++) {
+            int d1 = v1[i];
+            int d2 = v2[i];
+
+            result += (double) ((d1 - d2) * (d1 - d2)) / (Math.abs(d1) + Math.abs(d2));
+        }
+
+        return result;
+    }
+
+
+    // From maps, create count vectors.
     public static double distance(Map<String, Integer> s1, Map<String, Integer> s2) {
         Set<String> vocabulary = new HashSet<>(s1.keySet());
         vocabulary.addAll(s2.keySet());
@@ -19,20 +36,5 @@ public class Canberra {
         }
 
         return distance(v1, v2);
-    }
-
-    public static double distance(int[] v1, int[] v2) {
-        if (v1.length != v2.length) return -1;
-
-        double result = 0.0d;
-
-        for (int i = 0; i < v1.length; i++) {
-            int d1 = v1[i];
-            int d2 = v2[i];
-
-            result += (double) ((d1 - d2) * (d1 - d2)) / (Math.abs(d1) + Math.abs(d2));
-        }
-
-        return result;
     }
 }
