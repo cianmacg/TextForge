@@ -6,17 +6,19 @@ import java.util.Set;
 
 public class Overlap {
     // The size of the intersection divided by the size of the smaller of the 2 sets.
-    public static double distance(Map<String, Integer> s1, Map<String, Integer> s2) {
-        if(s1.isEmpty() || s2.isEmpty()) {
-            return 0.0d;
-        }
+    public static <T> double distance(Set<T> s1, Set<T> s2) {
+        if(s1.isEmpty() || s2.isEmpty()) return 0.0d;
 
-        Set<String> inter = new HashSet<String>(s1.keySet());
-        inter.retainAll(s2.keySet());
+        Set<T> inter = new HashSet<T>(s1);
+        inter.retainAll(s2);
 
         double divider = Math.min(s1.size(), s2.size());
 
         return 1 - (double) inter.size() / divider;
+    }
+
+    public static double distance(Map<String, Integer> s1, Map<String, Integer> s2) {
+        return distance(s1.keySet(), s2.keySet());
     }
 
 }
