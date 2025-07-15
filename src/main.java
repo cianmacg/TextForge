@@ -1,13 +1,23 @@
 import  ie.atu.forge.Similarity.Alignment.NeedlemanWunsch;
+import ie.atu.forge.Similarity.Alignment.SeedAndExtend;
+import ie.atu.forge.Similarity.Alignment.SmithWaterman;
 
 public class main {
     public static void main(String[] args) {
-        String s1 = "AC";
-        String s2 = "AGC";
+        String query   = "AGTCGA";
+        String subject = "TTAGTCGATT";
+        int k = 3;
 
-        String[] alignment = NeedlemanWunsch.align(s1, s2);
+        String[] alignments = SeedAndExtend.align(subject, query, k);
 
-        System.out.println(alignment[0]);
-        System.out.println(alignment[1]);
+        if(alignments == null) {
+            System.out.println("Nada");
+        } else {
+            for(String align: alignments) {
+                System.out.println(align);
+            }
+
+        }
+
     }
 }
