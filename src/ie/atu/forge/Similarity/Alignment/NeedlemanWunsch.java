@@ -1,18 +1,11 @@
 package ie.atu.forge.Similarity.Alignment;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 // Global alignment algorithm that aligns entire sequences filling in gaps where necessary.
 public class NeedlemanWunsch {
-    private static Map<String, Integer> scoring_matrix = new TreeMap<>();
+    private static Map<String, Integer> scoring_matrix;
     private static final int MATCH = 1;
     private static final int MISMATCH = -1;
     private static final int GAP = -1;
@@ -102,55 +95,4 @@ public class NeedlemanWunsch {
 
         return new char[][]{ actualAlignA, actualAlignB };
     }
-
-    // Loads in a given substitution matrix (from path specified by user) to be used instead of Match, Mismatch, and Gap scores.
-    public static void loadMatrix(String matrix_path) throws IOException {
-        // Make sure the scoring matrix is empty.
-        scoring_matrix.clear();
-
-
-
-        // I chose this method of file reading so I can read line-by-line.
-        try(BufferedReader reader = new BufferedReader(new FileReader(matrix_path))) {
-            String line;
-
-            // First, I want to dump and comment lines.
-            while((line = reader.readLine()) != null) {
-                if(!(line.charAt(0) == '#')) break;
-            }
-
-            // The next line that appears is the column header line. There should be 24 columns (including '*').
-            // Most lines have many spaces, I'll remove them.
-            line = line.replace(" ", "");
-
-            char[] col_names = line.toCharArray();
-
-            // Now we have the column names, lets loop over the rest of the rows and add the combination of the column name + row name as a key to the map, with the value being the value.
-            while((line = reader.readLine()) != null) {
-                String[] row = line.split(" ");
-                int col = 0; // Keep track of the column we are working with.
-
-                for(int i = 1; i < row.length; i++) {
-                    StringBuilder key = new StringBuilder();
-                    key.append(col_names[col]);
-                    key.append(row[0]); // row[0] is the row name.
-
-                    // sometimes after the split, the value is "". We don't want this, so skip over it.
-                    if(row[i] == "" || row[i] == null) continue;
-
-                    int value = Integer.parseInt(row[i]);
-                    scoring_matrix.put(key.toString(), value);
-
-                    col++;
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(scoring_matrix);
-
-    }
-
 }
