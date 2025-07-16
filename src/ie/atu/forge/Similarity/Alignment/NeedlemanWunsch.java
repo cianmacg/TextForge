@@ -113,7 +113,6 @@ public class NeedlemanWunsch {
         // I chose this method of file reading so I can read line-by-line.
         try(BufferedReader reader = new BufferedReader(new FileReader(matrix_path))) {
             String line;
-            char[] col_names = null;
 
             // First, I want to dump and comment lines.
             while((line = reader.readLine()) != null) {
@@ -121,26 +120,36 @@ public class NeedlemanWunsch {
             }
 
             // The next line that appears is the column header line. There should be 24 columns (including '*').
-            if((line = reader.readLine()) != null) {
-                // Most lines have many spaces, I'll be removing them.
-                line = line.replace(" ", "");
+            // Most lines have many spaces, I'll remove them.
+            line = line.replace(" ", "");
 
-                col_names = line.toCharArray();
-            }
+            char[] col_names = line.toCharArray();
 
             // Now we have the column names, lets loop over the rest of the rows and add the combination of the column name + row name as a key to the map, with the value being the value.
             while((line = reader.readLine()) != null) {
-                char[] chars = line.toCharArray();
-                char row_name = chars[0];
+                String[] row = line.split(" ");
+                int col = 0; // Keep track of the column we are working with.
 
-                for(int i = 1; i < line.length(); i++) {
-                    if(chars[i] == '-')
+                for(int i = 1; i < row.length; i++) {
+                    StringBuilder key = new StringBuilder();
+                    key.append(col_names[col]);
+                    key.append(row[0]); // row[0] is the row name.
+
+                    // sometimes after the split, the value is "". We don't want this, so skip over it.
+                    if(row[i] == "" || row[i] == null) continue;
+
+                    int value = Integer.parseInt(row[i]);
+                    scoring_matrix.put(key.toString(), value);
+
+                    col++;
                 }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        System.out.println(scoring_matrix);
 
     }
 
