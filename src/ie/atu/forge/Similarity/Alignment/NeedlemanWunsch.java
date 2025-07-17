@@ -1,7 +1,9 @@
 package ie.atu.forge.Similarity.Alignment;
 
+import ie.atu.forge.ToolBox.MatrixLoader;
+
+import java.io.IOException;
 import java.util.Map;
-import java.util.TreeMap;
 
 // Global alignment algorithm that aligns entire sequences filling in gaps where necessary.
 public class NeedlemanWunsch {
@@ -17,7 +19,6 @@ public class NeedlemanWunsch {
         // If the user inputted strings, give them strings back.
         return new String[]{ new String(alignments[0]), new String(alignments[1]) };
     }
-
 
     public static char[][] align(char[] s1, char[] s2) {
         int col = s1.length;
@@ -94,5 +95,23 @@ public class NeedlemanWunsch {
         System.arraycopy(maxAlignB, index + 1, actualAlignB, 0, actualAlignB.length);
 
         return new char[][]{ actualAlignA, actualAlignB };
+    }
+
+    public static char[][] align(char[] s1, char[] s2, Map<String, Integer> scoring_matrix) {
+        return null;
+    }
+
+    public static String[] align(String s1, String s2, Map<String, Integer> scoring_matrix) {
+        return null;
+    }
+
+    public static char[][] align(char[] s1, char[] s2, String matrix_path) throws IOException {
+        Map<String, Integer> scoring_matrix = MatrixLoader.load(matrix_path);
+
+        return align(s1, s2, scoring_matrix);
+    }
+
+    public static String[] align(String s1, String s2, String matrix_path) {
+        return null;
     }
 }

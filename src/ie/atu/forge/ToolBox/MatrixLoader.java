@@ -50,6 +50,7 @@ public class MatrixLoader {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 
         return scoring_matrix;
