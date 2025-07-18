@@ -5,18 +5,34 @@ import java.util.concurrent.StructuredTaskScope;
 
 // A record for each seed.
 record Seed (int queryIndex, int subjectIndex) {}
+
+// A record for each extension. This helps prevent duplicates.
+record Extension (int start, String text) {}
 /*
     A 2 stage local sequence matching algorithm.
     Begins with a seeding phase where short exact matching sequences are found.
     Extends these seeds later to enlarge the match beyond the size of a kmer.
 
-    This implementation uses a greedy no-gap extension, and returns the full list of matches.
+    This implementation uses a greedy no-gap extension, and returns the full list of matches, filtering out duplicates.
  */
 public class SeedAndExtend {
     public static String[] align(String subject, String query, int kmer_length) {
         List<Seed> seeds = seed(subject, query, kmer_length);
+        Extension[] extensions = extend(seeds, subject, query, kmer_length);
 
-        return extend(seeds, subject, query, kmer_length);
+        Map<Integer, String> filtered_extensions = new HashMap<>();
+
+        // This should ensure no duplicate alignments are included.
+        for(Extension ext: extensions) {
+            filtered_extensions.merge(ext.start(), ext.text(), (existing, candidate) -> existing.length() >= candidate.length() ? existing : candidate);
+        }
+
+        List<String> results = new ArrayList<>(filtered_extensions.values());
+
+        // Also need to filter out any alignment that is a subset of another (not if they are the same length), regardless of starting position.
+        results.removeIf(res1 -> results.stream().anyMatch(res2 -> !res1.equals(res2) && res2.contains(res1)));
+
+        return results.toArray(new String[0]);
     }
 
     // The seeding part should find exact matching parts of the 2 sequences.
@@ -31,7 +47,7 @@ public class SeedAndExtend {
 
         List<Seed> seeds = new ArrayList<>();
 
-        //find all matches of query kmers with subject map. Make seeds from them.
+        // Find all matches of query kmers with subject map. Make seeds from them.
         for(int i = 0; i <= query.length() - kmer_length; i++) {
             List<Integer> match = kmer_map.get(query.substring(i, i + kmer_length));
 
@@ -47,9 +63,9 @@ public class SeedAndExtend {
 
     // Greedy ungapped extension. Continues to extend both left and right as long as they are still exact matches.
     // Since this is a greedy no-gap implementation, both the subject match and query match will be the same.
-    private static String[] extend(List<Seed> seeds, String subject, String query, int kmer_length) {
+    private static Extension[] extend(List<Seed> seeds, String subject, String query, int kmer_length) {
         try(var scope = new StructuredTaskScope.ShutdownOnFailure()) {
-            List<StructuredTaskScope.Subtask<String>> tasks = new ArrayList<>();
+            List<StructuredTaskScope.Subtask<Extension>> tasks = new ArrayList<>();
 
             for(Seed seed: seeds) {
                 // Each seed can be checked independently.
@@ -62,7 +78,7 @@ public class SeedAndExtend {
             // Get each string returned by each task and return them as an array.
             return tasks.stream()
                     .map(StructuredTaskScope.Subtask::get)
-                    .toArray(String[]::new);
+                    .toArray(Extension[]::new);
 
         } catch (Exception e) {
             System.err.println("Error: " + e);
@@ -70,11 +86,12 @@ public class SeedAndExtend {
         }
     }
 
-    private static String extend(Seed seed, String subject, String query, int kmer_length) {
+    // Extends a single seed.
+    private static Extension extend(Seed seed, String subject, String query, int kmer_length) {
         int sStart = seed.subjectIndex();
         int qStart = seed.queryIndex();
-        int sEnd = sStart + kmer_length;
-        int qEnd = qStart + kmer_length;
+        int sEnd = sStart + kmer_length - 1;
+        int qEnd = qStart + kmer_length - 1;
 
         // Extend left
         while(sStart > 0 && qStart > 0 && subject.charAt(sStart - 1) == query.charAt(qStart - 1)) {
@@ -89,6 +106,6 @@ public class SeedAndExtend {
         }
 
         // It doesn't matter if we choose subject or query here, both will be the same.
-        return subject.substring(sStart, sEnd);
+        return new Extension(sStart, subject.substring(sStart, sEnd + 1));
     }
 }
