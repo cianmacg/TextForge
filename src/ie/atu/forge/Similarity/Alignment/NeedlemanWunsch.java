@@ -7,7 +7,6 @@ import java.util.Map;
 
 // Global alignment algorithm that aligns entire sequences filling in gaps where necessary.
 public class NeedlemanWunsch {
-    private static Map<String, Integer> scoring_matrix;
     private static final int MATCH = 1;
     private static final int MISMATCH = -1;
     private static final int GAP = -1;
@@ -54,6 +53,12 @@ public class NeedlemanWunsch {
         return traceback(scores, s1, s2);
     }
 
+    public static String[] align(String s1, String s2, Map<String, Integer> scoring_matrix) {
+        char[][] alignments = align(s1.toCharArray(), s2.toCharArray(), scoring_matrix);
+
+        return new String[]{new String(alignments[0]), new String(alignments[1])};
+    }
+
     public static char[][] align(char[] s1, char[] s2, Map<String, Integer> scoring_matrix) {
         try {
             int col = s1.length;
@@ -97,12 +102,6 @@ public class NeedlemanWunsch {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static String[] align(String s1, String s2, Map<String, Integer> scoring_matrix) {
-        char[][] alignments = align(s1.toCharArray(), s2.toCharArray(), scoring_matrix);
-
-        return new String[]{new String(alignments[0]), new String(alignments[1])};
     }
 
     public static char[][] align(char[] s1, char[] s2, String matrix_path) throws IOException {

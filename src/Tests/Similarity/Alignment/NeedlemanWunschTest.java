@@ -146,9 +146,7 @@ public class NeedlemanWunschTest {
         return mismatches;
     }
 
-    // Stub for your real BLOSUM45 map
     private Map<String, Integer> loadBlosum45Stub() throws IOException {
-        Map<String, Integer> stub = MatrixLoader.load("./src/ScoringMatrices/BLOSUM45.txt");
-        return stub;
+        return MatrixLoader.load("./src/ScoringMatrices/BLOSUM45.txt");
     }
 }
