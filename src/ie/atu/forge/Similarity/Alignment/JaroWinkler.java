@@ -1,4 +1,4 @@
 package ie.atu.forge.Similarity.Alignment;
 
-public class Blast {
+public class JaroWinkler {
 }
