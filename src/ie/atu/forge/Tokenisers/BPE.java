@@ -23,15 +23,34 @@ public class BPE {
 
         int max_iter = vocab_size + 100;
         int iter = 0;
+        trained = true; // Putting this here for now, as otherwise exceptions are thrown during training, need to find a better solution.
+
         while(vocabulary.size() < vocab_size && iter < max_iter) {
             expand(corpus);
             iter++;
         }
 
-        trained = true;
+
     }
 
     private void expand(String[] corpus) {
+        Map<String, Integer> candidates = new HashMap<>();
+
+        for(String text: corpus) {
+            String[] tokens = tokenise(text);
+
+            for(int i = 0; i < tokens.length - 1; i++) {
+                candidates.merge(tokens[i] + tokens[i + 1], 1, Integer::sum);
+            }
+        }
+
+        if(candidates.isEmpty()) return;
+
+        System.out.println("Attempting to add: " + Collections.max(candidates.entrySet(), Map.Entry.comparingByValue()).getKey());
+        vocabulary.add(Collections.max(candidates.entrySet(), Map.Entry.comparingByValue()).getKey());
+    }
+
+    /*private void expand(String[] corpus) {
         ConcurrentMap<String, Integer> candidates = new ConcurrentHashMap<>();
 
         try(var scope = new StructuredTaskScope.ShutdownOnFailure()) {
@@ -57,7 +76,7 @@ public class BPE {
 
         System.out.println("Attempting to add: " + Collections.max(candidates.entrySet(), Map.Entry.comparingByValue()).getKey());
         vocabulary.add(Collections.max(candidates.entrySet(), Map.Entry.comparingByValue()).getKey());
-    }
+    }*/
 
     public Set<String> getVocabulary() {
         return vocabulary;
@@ -71,6 +90,8 @@ public class BPE {
     It then repeats, with the start of the string now being the position after the end of the last token, until all tokens have been found.
      */
     public String[] tokenise(String text) {
+        if(!trained) throw new IllegalStateException("Not trained.");
+
         ArrayList<String> tokens = new ArrayList<>();
         int start = 0;
 
@@ -90,6 +111,6 @@ public class BPE {
         }
 
 
-        return tokens.toArray(new String[tokens.size()]);
+        return tokens.toArray(new String[0]);
     }
 }
