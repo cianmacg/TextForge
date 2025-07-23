@@ -1,14 +1,11 @@
 import java.io.IOException;
 
-import  ie.atu.forge.Tokenisers.BPE2;
+import  ie.atu.forge.Tokenisers.Unigram;
 
 public class main {
     public static void main(String[] args) throws IOException {
-        BPE2 tokens = new BPE2();
-        String corpus = "Hey this is a corpus boy whaddup.";
+        Unigram tokens = new Unigram(5);
+        String corpus = "This is a corpus. This is going to be a bit larger to allow for better training. I think.";
         tokens.train(corpus, 200);
-        int[] new_tok = tokens.encode("whaddup");
-        String decoded = tokens.decode(new_tok);
-        System.out.println(decoded);
     }
 }
