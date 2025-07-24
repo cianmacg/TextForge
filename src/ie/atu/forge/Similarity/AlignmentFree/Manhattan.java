@@ -11,7 +11,7 @@ public class Manhattan {
         double result = 0.0d;
 
         for(int i = 0; i < v1.length; i++) {
-            result += Math.abs(v1[i] - v1[i]);
+            result += Math.abs(v1[i] - v2[i]);
         }
 
         return result;
@@ -29,6 +29,7 @@ public class Manhattan {
         for(String token: vocabulary) {
             v1[i] = s1.getOrDefault(token, 0);
             v2[i] = s2.getOrDefault(token, 0);
+            i++;
         }
 
         return distance(v1, v2);

@@ -7,15 +7,13 @@ import java.util.Set;
 public class Jaccard {
     // The size of the intersection divided by the size of the union of the sets.
     public static <T> double similarity(Set<T> s1, Set<T> s2) {
+        if(s1.isEmpty() && s2.isEmpty()) return 1.0d;
         if(s1.isEmpty() || s2.isEmpty()) return 0.0d;
         
         Set<T> inter = new HashSet<T>(s1);
         inter.retainAll(s2);
-
-        Set<T> union = new HashSet<T>(s1);
-        union.addAll(s2);
         
-        return (double) inter.size() / union.size();
+        return (double) inter.size() / (s1.size() + s2.size() - inter.size());
     }
 
     public static double similarity(Map<String, Integer> s1, Map<String, Integer> s2) {

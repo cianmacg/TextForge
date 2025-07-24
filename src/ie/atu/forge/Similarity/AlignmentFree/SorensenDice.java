@@ -7,6 +7,7 @@ import java.util.Set;
 public class SorensenDice {
     // 2 * the size of the intersection divided by the sum of the set sizes.
     public static <T> double similarity(Set<T> s1, Set<T> s2) {
+        if(s1.isEmpty() && s2.isEmpty()) return 1.0d;
         if(s1.isEmpty() || s2.isEmpty()) return 0.0d;
 
         Set<T> inter = new HashSet<T>(s1);

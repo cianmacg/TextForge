@@ -17,7 +17,7 @@ public class Euclidean {
             result += (d1 - d2) * (d1 - d2);
         }
 
-        return result;
+        return Math.sqrt(result);
     }
 
 
@@ -32,6 +32,7 @@ public class Euclidean {
         for(String token: vocabulary) {
             v1[i] = s1.getOrDefault(token, 0);
             v2[i] = s2.getOrDefault(token, 0);
+            i++;
         }
 
         return distance(v1, v2);

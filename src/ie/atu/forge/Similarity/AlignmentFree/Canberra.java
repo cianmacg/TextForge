@@ -14,7 +14,7 @@ public class Canberra {
             int d1 = v1[i];
             int d2 = v2[i];
 
-            result += (double) ((d1 - d2) * (d1 - d2)) / (Math.abs(d1) + Math.abs(d2));
+            result += (double) Math.abs(d1 - d2) / (Math.abs(d1) + Math.abs(d2));
         }
 
         return result;
@@ -33,6 +33,7 @@ public class Canberra {
         for(String token: vocabulary) {
             v1[i] = s1.getOrDefault(token, 0);
             v2[i] = s2.getOrDefault(token, 0);
+            i++;
         }
 
         return distance(v1, v2);

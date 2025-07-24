@@ -7,7 +7,8 @@ import java.util.Set;
 public class Overlap {
     // The size of the intersection divided by the size of the smaller of the 2 sets.
     public static <T> double distance(Set<T> s1, Set<T> s2) {
-        if(s1.isEmpty() || s2.isEmpty()) return 0.0d;
+        if(s1.isEmpty() && s2.isEmpty()) return 0.0d;
+        if(s1.isEmpty() || s2.isEmpty()) return 1.0d;
 
         Set<T> inter = new HashSet<T>(s1);
         inter.retainAll(s2);

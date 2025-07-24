@@ -7,9 +7,8 @@ import java.util.Set;
 public class Tversky {
     // Tversky can generalise both Jaccard and Sorensen-Dice with 'alpha' (a) and 'beta' (b) values.
     public static <T> double similarity(Set<T> s1, Set<T> s2, double a, double b) {
-        if(s1.isEmpty() || s2.isEmpty()) {
-            return 0.0d;
-        }
+        if(s1.isEmpty() && s2.isEmpty()) return 1.0d;
+        if(s1.isEmpty() || s2.isEmpty()) return 0.0d;
 
         Set<T> setA = new HashSet<T>(s1);
         Set<T> setB = new HashSet<T>(s2);
