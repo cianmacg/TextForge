@@ -1,117 +1,102 @@
 package Tests.Tokenisers;
 
-import ie.atu.forge.Tokenisers.BPE;
+import ie.atu.forge.Tokenisers.BPE2;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Set;
 
 public class BPETest {
 
-    @Test
-    public void testVocabularyGrowth() {
-        BPE bpe = new BPE();
-        String[] corpus = {"low", "lower", "newest", "widest"};
+    private BPE2 bpe;
 
-        bpe.train(corpus, 20);
-
-        Set<String> vocab = bpe.getVocabulary();
-
-        // Should include all characters
-        assertTrue(vocab.contains("l"));
-        assertTrue(vocab.contains("o"));
-        assertTrue(vocab.contains("w"));
-
-        // Should include some merged tokens
-        assertTrue(vocab.size() <= 20);
-        assertTrue(vocab.stream().anyMatch(token -> token.length() > 1));
+    @BeforeEach
+    public void setUp() {
+        bpe = new BPE2();
+        // Train on a small corpus to build the vocabulary.
+        // Example corpus contains common words and punctuation.
+        String corpus = "low lower lowest slow slower fastest fast";
+        bpe.train(corpus, 50);  // vocab size 50 for plenty of merges
     }
 
     @Test
-    public void testTokenisation_MergesCommonPairs() {
-        BPE bpe = new BPE();
-        String[] corpus = {"l o w", "l o w e r", "n e w e s t", "w i d e s t"};
-        // Spaces here simulate initial character splits (common for BPE training)
-        bpe.train(corpus, 12);
+    public void testBasicEncodeDecode() {
+        String text = "lower";
+        int[] tokens = bpe.encode(text);
+        String decoded = bpe.decode(tokens);
 
-        // After training, we expect some merges:
-        // - "l o w" should likely merge into "low"
-        // - "e s" might merge (appears in "newest" and "widest")
-        // Final tokens depend on frequency, but we can assert expected splits.
-
-        String[] tokens1 = bpe.tokenise("low");
-        assertArrayEquals(new String[]{"low"}, tokens1, "Expected 'low' to be a single token");
-
-        String[] tokens2 = bpe.tokenise("lowest");
-        // "lowest" not in corpus, but "low" + "e s t" likely
-        assertTrue(tokens2.length >= 2);
-        assertEquals("lowest", String.join("", tokens2));
+        assertEquals(text, decoded, "Decoded text should match original");
     }
 
     @Test
-    public void testTokenisation_HelloCorpus() {
-        BPE bpe = new BPE();
-        String[] corpus = {"h e l l o", "h e l l", "h e l m e t"};
-        bpe.train(corpus, 15);
+    public void testEncodingConsistency() {
+        String text = "fastest";
+        int[] firstEncoding = bpe.encode(text);
+        int[] secondEncoding = bpe.encode(text);
 
-        // Likely merges:
-        // - "h e" (common prefix)
-        // - "l l" (appears in "hello", "hell")
-        // - Possibly "he" + "ll" + "o" for "hello"
-
-        String[] tokens = bpe.tokenise("hello");
-
-        // Check deterministic expected split (typical result after these merges)
-        assertArrayEquals(new String[]{"he", "ll", "o"}, tokens);
+        assertArrayEquals(firstEncoding, secondEncoding,
+                "Encoding the same text twice should yield identical tokens");
     }
 
     @Test
-    public void testUnseenWordFallsBackToChars() {
-        BPE bpe = new BPE();
-        String[] corpus = {"apple", "apricot", "banana"};
-        bpe.train(corpus, 20);
+    public void testRoundTripMultipleWords() {
+        String text = "slow lower fast";
+        int[] tokens = bpe.encode(text);
+        String decoded = bpe.decode(tokens);
 
-        String[] tokens = bpe.tokenise("grape");
-
-        // None of "grape" appeared, so must at least fall back to characters
-        assertEquals("grape", String.join("", tokens));
-        assertTrue(Arrays.stream(tokens).allMatch(t -> t.length() == 1 || bpe.getVocabulary().contains(t)));
+        assertEquals(text, decoded, "Decoded text should match for multi-word inputs");
     }
 
     @Test
-    public void testTokenisationBeforeTrainingThrows() {
-        BPE bpe = new BPE();
+    public void testHandlesUnknownWord() {
+        // If "rocket" wasn't in training, BPE should still encode it
+        String text = "rocket";
+        int[] tokens = bpe.encode(text);
+        String decoded = bpe.decode(tokens);
 
-        Exception ex = assertThrows(IllegalStateException.class, () -> {
-            bpe.tokenise("hello");
-        });
-
-        assertTrue(ex.getMessage().contains("not trained"));
+        assertEquals(text, decoded, "BPE should handle words outside training corpus");
+        assertTrue(tokens.length > 0, "Tokens should not be empty for unknown words");
     }
 
     @Test
-    public void testEmptyStringTokenisation() {
-        BPE bpe = new BPE();
-        String[] corpus = {"a", "b"};
-        bpe.train(corpus, 10);
+    public void testMergesHappen() {
+        // Ensure BPE is actually merging subwords (not just characters)
+        String word = "lowest";
+        int[] tokens = bpe.encode(word);
 
-        String[] tokens = bpe.tokenise("");
-        assertEquals(0, tokens.length);
+        assertTrue(tokens.length < word.length(),
+                "BPE should merge characters into fewer tokens");
     }
 
     @Test
-    public void testReconstruction() {
-        BPE bpe = new BPE();
-        String[] corpus = {"the", "thermostat", "theme"};
-        bpe.train(corpus, 30);
+    public void testPunctuation() {
+        String text = "fast!";
+        int[] tokens = bpe.encode(text);
+        String decoded = bpe.decode(tokens);
 
-        String input = "thermostat";
-        String[] tokens = bpe.tokenise(input);
+        assertEquals(text, decoded, "BPE should handle punctuation correctly");
+    }
 
-        // Must reconstruct exactly
-        assertEquals(input, String.join("", tokens));
+    @Test
+    public void testEmptyInput() {
+        String text = "";
+        int[] tokens = bpe.encode(text);
+        String decoded = bpe.decode(tokens);
+
+        assertEquals("", decoded, "Empty input should encode/decode to empty");
+        assertEquals(0, tokens.length, "Encoding an empty string should yield no tokens");
+    }
+
+    @Test
+    public void testWhitespacePreservation() {
+        String text = "fast slow";
+        int[] tokens = bpe.encode(text);
+        String decoded = bpe.decode(tokens);
+
+        assertEquals(text, decoded, "Whitespace must be preserved after round-trip");
     }
 }
+
 

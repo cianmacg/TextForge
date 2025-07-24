@@ -89,13 +89,14 @@ public class BPE2 {
     }
 
     // Should only ever be called once.
+    // Vocabulary size will be the added to the size of the base vocabulary.
     public void train(String corpus, int vocab_size) {
         if(trained) return;
 
         int[] token_corpus = encode(corpus);
 
         int count = vocab.size();
-        int max_iter = vocab_size + 100;
+        int max_iter = vocab_size + 256 + 50; // 256 is the base vocab size (single characters), and the 50 is just to be safe.
         // Now that our vocabulary has been initialised, we can expand it by merging tokens together. Using count in place of vocab.size, as they should be the same anyway.
         while(count < max_iter) {
             int[] best_pair = find_best_pair(token_corpus);
