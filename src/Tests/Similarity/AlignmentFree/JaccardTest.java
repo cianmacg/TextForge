@@ -8,66 +8,125 @@ import org.junit.jupiter.api.Test;
 
 public class JaccardTest {
 
+    /* ---------------------------
+       Tests for Classic Jaccard
+       --------------------------- */
+
     @Test
     public void testIdenticalSets() {
-        Map<String, Integer> s1 = Map.of("a", 3, "b", 2, "c", 1);
-        Map<String, Integer> s2 = Map.of("a", 1, "b", 10, "c", 5);
+        Set<String> s1 = Set.of("a", "b", "c");
+        Set<String> s2 = Set.of("a", "b", "c");
 
         double result = Jaccard.similarity(s1, s2);
-        // Both contain the same keys: {a, b, c} → intersection = 3, union = 3
         assertEquals(1.0, result, 1e-9, "Identical sets should have similarity 1.0");
     }
 
     @Test
     public void testNoOverlap() {
-        Map<String, Integer> s1 = Map.of("a", 1, "b", 1);
-        Map<String, Integer> s2 = Map.of("c", 1, "d", 1);
+        Set<String> s1 = Set.of("a", "b");
+        Set<String> s2 = Set.of("c", "d");
 
         double result = Jaccard.similarity(s1, s2);
-        // No common keys: intersection = 0, union = 4
         assertEquals(0.0, result, 1e-9, "Sets with no overlap should have similarity 0.0");
     }
 
     @Test
     public void testPartialOverlap() {
-        Map<String, Integer> s1 = Map.of("a", 2, "b", 1);
-        Map<String, Integer> s2 = Map.of("a", 1, "c", 1);
+        Set<String> s1 = Set.of("a", "b");
+        Set<String> s2 = Set.of("a", "c");
 
         double result = Jaccard.similarity(s1, s2);
-        // Keys as sets: intersection = {a} (1), union = {a, b, c} (3)
-        // Similarity = 1 / 3
+        // Intersection = 1, Union = 3
         assertEquals(1.0 / 3.0, result, 1e-9, "Should compute correct Jaccard similarity for sets");
     }
 
     @Test
     public void testOneEmptySet() {
-        Map<String, Integer> s1 = new HashMap<>();
-        Map<String, Integer> s2 = Map.of("a", 1, "b", 1);
+        Set<String> s1 = Set.of();
+        Set<String> s2 = Set.of("a", "b");
 
         double result = Jaccard.similarity(s1, s2);
-        // Intersection = 0, union = 2
         assertEquals(0.0, result, 1e-9, "Empty vs non-empty set should yield 0 similarity");
     }
 
     @Test
     public void testBothEmptySets() {
-        Map<String, Integer> s1 = new HashMap<>();
-        Map<String, Integer> s2 = new HashMap<>();
+        Set<String> s1 = Set.of();
+        Set<String> s2 = Set.of();
 
         double result = Jaccard.similarity(s1, s2);
-        // Two empty sets are typically considered identical: similarity = 1.0
         assertEquals(1.0, result, 1e-9, "Two empty sets should have similarity 1.0");
     }
 
     @Test
     public void testSubsetCase() {
-        Map<String, Integer> s1 = Map.of("a", 1, "b", 1);
-        Map<String, Integer> s2 = Map.of("a", 5, "b", 10, "c", 1);
+        Set<String> s1 = Set.of("a", "b");
+        Set<String> s2 = Set.of("a", "b", "c");
 
         double result = Jaccard.similarity(s1, s2);
-        // Keys as sets: intersection = {a, b} (2), union = {a, b, c} (3)
-        // Similarity = 2 / 3
+        // Intersection = 2, Union = 3
         assertEquals(2.0 / 3.0, result, 1e-9, "Should handle subset relationships correctly");
     }
-}
 
+    /* -----------------------------------
+       Tests for Generalized Jaccard
+       (counts / multiset similarity)
+       ----------------------------------- */
+
+    @Test
+    public void testGeneralisedIdenticalCounts() {
+        Map<String, Integer> s1 = Map.of("a", 2, "b", 3);
+        Map<String, Integer> s2 = Map.of("a", 2, "b", 3);
+
+        double result = Jaccard.generalised_similarity(s1, s2);
+        assertEquals(1.0, result, 1e-9, "Identical maps should have similarity 1.0");
+    }
+
+    @Test
+    public void testGeneralisedDifferentCounts() {
+        Map<String, Integer> s1 = Map.of("a", 2, "b", 1);
+        Map<String, Integer> s2 = Map.of("a", 1, "b", 4);
+
+        double result = Jaccard.generalised_similarity(s1, s2);
+        // min counts = a:1, b:1 → 2
+        // max counts = a:2, b:4 → 6
+        // Similarity = 2 / 6 = 1/3
+        assertEquals(1.0 / 3.0, result, 1e-9, "Should compute correct generalised Jaccard similarity");
+    }
+
+    @Test
+    public void testGeneralisedNoOverlap() {
+        Map<String, Integer> s1 = Map.of("a", 3);
+        Map<String, Integer> s2 = Map.of("b", 5);
+
+        double result = Jaccard.generalised_similarity(s1, s2);
+        assertEquals(0.0, result, 1e-9, "Maps with no shared keys should have similarity 0.0");
+    }
+
+    @Test
+    public void testGeneralisedZeroCounts() {
+        Map<String, Integer> s1 = Map.of("a", 0, "b", 0);
+        Map<String, Integer> s2 = Map.of("a", 0, "b", 0);
+
+        double result = Jaccard.generalised_similarity(s1, s2);
+        assertEquals(1.0, result, 1e-9, "Maps with only zero counts should be treated as identical");
+    }
+
+    @Test
+    public void testGeneralisedEmptyVsNonEmpty() {
+        Map<String, Integer> s1 = new HashMap<>();
+        Map<String, Integer> s2 = Map.of("a", 1);
+
+        double result = Jaccard.generalised_similarity(s1, s2);
+        assertEquals(0.0, result, 1e-9, "Empty map vs non-empty map should yield 0 similarity");
+    }
+
+    @Test
+    public void testGeneralisedBothEmpty() {
+        Map<String, Integer> s1 = new HashMap<>();
+        Map<String, Integer> s2 = new HashMap<>();
+
+        double result = Jaccard.generalised_similarity(s1, s2);
+        assertEquals(1.0, result, 1e-9, "Two empty maps should have similarity 1.0");
+    }
+}

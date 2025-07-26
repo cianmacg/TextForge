@@ -1,17 +1,17 @@
 package ie.atu.forge.Similarity.Alignment;
 
 public class JaroWinkler {
-    public static double similarity(char[] c1, char[] c2, double p) {
-        if(c1.length == 0 && c2.length == 0) return 1.0d;
-        if(c1.length == 0 || c2.length == 0) return 0.0d;
+    public static double similarity(char[] s1, char[] c2, double p) {
+        if(s1.length == 0 && c2.length == 0) return 1.0d;
+        if(s1.length == 0 || c2.length == 0) return 0.0d;
 
-        double jaro = Jaro.similarity(c1, c2);
+        double jaro = Jaro.similarity(s1, c2);
 
         int l = 0;
-        int end = Math.min(Math.min(c1.length, c2.length), 4);
+        int end = Math.min(Math.min(s1.length, c2.length), 4);
 
         for(int i = 0; i < end; i++) {
-            if(c1[i] == c2[i]) l = i + 1;
+            if(s1[i] == c2[i]) l = i + 1;
             else break;
         }
 
