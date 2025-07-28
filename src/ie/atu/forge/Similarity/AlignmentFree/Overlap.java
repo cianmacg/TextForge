@@ -21,5 +21,4 @@ public class Overlap {
     public static double distance(Map<String, Integer> s1, Map<String, Integer> s2) {
         return distance(s1.keySet(), s2.keySet());
     }
-
 }

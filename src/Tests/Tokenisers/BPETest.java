@@ -1,20 +1,18 @@
 package Tests.Tokenisers;
 
-import ie.atu.forge.Tokenisers.BPE2;
+import ie.atu.forge.Tokenisers.BPE;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 public class BPETest {
 
-    private BPE2 bpe;
+    private BPE bpe;
 
     @BeforeEach
     public void setUp() {
-        bpe = new BPE2();
+        bpe = new BPE();
         // Train on a small corpus to build the vocabulary.
         // Example corpus contains common words and punctuation.
         String corpus = "low lower lowest slow slower fastest fast";
