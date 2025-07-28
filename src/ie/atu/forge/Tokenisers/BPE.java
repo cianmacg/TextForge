@@ -3,9 +3,6 @@ package ie.atu.forge.Tokenisers;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 record ByteSequence(byte[] bytes) {
@@ -104,18 +101,18 @@ public class BPE {
         int max_iter = vocab_size + 256 + 50; // 256 is the base vocab size (single characters), and the 50 is just to be safe.
         // Now that our vocabulary has been initialised, we can expand it by merging tokens together. Using count in place of vocab.size, as they should be the same anyway.
         while(count < max_iter) {
-            int[] best_pair = find_best_pair(token_corpus);
-            int token_id = add_token(best_pair);
+            int[] best_pair = findBestPair(token_corpus);
+            int token_id = addToken(best_pair);
 
             // Update the token corpus with the new merged token.
-            token_corpus = merge_tokens(token_id, best_pair, token_corpus);
+            token_corpus = mergeTokens(token_id, best_pair, token_corpus);
             count++;
         }
 
         trained = true;
     }
 
-    private int[] find_best_pair(int[] corpus) {
+    private int[] findBestPair(int[] corpus) {
         Map<Integer[], Integer> candidates = new HashMap<>();
 
         for(int i = 0; i < corpus.length - 1; i++) {
@@ -133,7 +130,7 @@ public class BPE {
     }
 
     // Adds a new token to the maps and returns the integer representation.
-    private int add_token(int[] old_tokens) {
+    private int addToken(int[] old_tokens) {
         List<ByteSequence> new_bs = new ArrayList<>();
         int bs_length = 0;
         for (Integer token : old_tokens) {
@@ -161,7 +158,7 @@ public class BPE {
         return token_count - 1;
     }
 
-    private int[] merge_tokens(int merged_token, int[] old_tokens, int[] corpus) {
+    private int[] mergeTokens(int merged_token, int[] old_tokens, int[] corpus) {
         int corpus_len = corpus.length;
 
         if(corpus_len == 0) return corpus;
@@ -187,32 +184,88 @@ public class BPE {
         return updated_corpus.stream().mapToInt(Integer::intValue).toArray();
     }
 
-    // Saves the current vocabulary (Inverse vocab) map to a JSON file. Path is the location to save the vocabulary.
-    public void save_Json(String path) throws IOException {
+    public Map<Integer, ByteSequence> getVocab() {
+        return vocab;
+    }
+
+    public Map<ByteSequence, Integer> getInverseVocab() {
+        return inverse_vocab;
+    }
+
+    // Saves the current vocabulary map to a JSON file. Path is the location to save the vocabulary. ByteSequences are represented in Hex.
+    public void vocabToJson(String path) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_vocab.json"));
 
         writer.write('{');
         writer.newLine();
 
-        for(Map.Entry<ByteSequence, Integer> mapping: inverse_vocab.entrySet()) {
-            ByteBuffer byteBuffer = ByteBuffer.wrap(mapping.getKey().bytes());
-            CharBuffer charBuffer = StandardCharsets.UTF_8.decode(byteBuffer);
-            char[] key = new char[charBuffer.remaining()];
-            charBuffer.get(key);
-            System.out.println(key);
-            writer.write("'" + Arrays.toString(key) + "'"); // Write the key
-            writer.write(':');
-            writer.write(' ');
-            writer.write(String.valueOf(mapping.getValue())); // Write the value
-            writer.write(',');
+        boolean first_token = true;
+        for (Map.Entry<ByteSequence, Integer> mapping : inverse_vocab.entrySet()) {
+            byte[] bytes = mapping.getKey().bytes();
+
+            // Convert each byte to a two-digit hex string
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) {
+                sb.append(String.format("%02X ", b));  // uppercase hex, space-separated
+            }
+
+            // Remove trailing space
+            if (!sb.isEmpty()) {
+                sb.setLength(sb.length() - 1);
+            }
+
+            if(!first_token) writer.write(",");
+            else first_token = false;
+
+            // Write as: HEX_BYTES: VALUE
             writer.newLine();
+            writer.write("\t\"" + mapping.getValue() + "\": \"" + sb + "\"");
         }
 
+        writer.newLine();
         writer.write('}');
         writer.close();
     }
 
-    public void save_Json() throws IOException {
-        save_Json("");
+    public void vocabToJson() throws IOException {
+        vocabToJson("");
+    }
+
+    // Saves the current vocabulary (Inverse vocab) map to a JSON file. Path is the location to save the vocabulary. ByteSequences are represented in Hex.
+    public void inverseVocabToJson(String path) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_inverse_vocab.json"));
+
+        writer.write('{');
+
+        boolean first_token = true;
+        for (Map.Entry<ByteSequence, Integer> mapping : inverse_vocab.entrySet()) {
+            byte[] bytes = mapping.getKey().bytes();
+
+            // Convert each byte to a two-digit hex string
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) {
+                sb.append(String.format("%02X ", b));  // uppercase hex, space-separated
+            }
+
+            // Remove trailing space
+            if (!sb.isEmpty()) {
+                sb.setLength(sb.length() - 1);
+            }
+
+            if(!first_token) writer.write(",");
+            else first_token = false;
+
+            // Write as: HEX_BYTES: VALUE
+            writer.newLine();
+            writer.write("\t\"" + sb + "\": " + mapping.getValue());
+        }
+
+        writer.newLine();
+        writer.write('}');
+        writer.close();
+    }
+
+    public void inverseVocabToJson() throws IOException {
+        inverseVocabToJson("");
     }
 }
