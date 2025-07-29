@@ -1,15 +1,16 @@
 import java.io.IOException;
 
-import ie.atu.forge.Tokenisers.BPE;
+import ie.atu.forge.Similarity.Alignment.SeedAndExtend;
+import ie.atu.forge.Similarity.Alignment.Extension;
 
 public class main {
     public static void main(String[] args) throws IOException {
-        BPE tokens = new BPE();
-        String corpus = "This is a corpus. This is going to be a bit larger to allow for better training. I think.";
-        String test = "And here I am testing the encoding with a sample string.";
-        tokens.train(corpus, 50);
-        int[] encoding = tokens.encode(test);
-        System.out.println(tokens.decode(encoding));
-        tokens.vocabToJson();
+        String s1 = "ABBACDDABBABCDCDA";
+        String s2 = "ACCDDBABBADGHDCDA";
+
+        Extension[] exts = SeedAndExtend.align(s1, s2, 2);
+        for(Extension ext: exts) {
+            System.out.printf("Start: %d, Alignment: %s \n", ext.start(), ext.text());
+        }
     }
 }

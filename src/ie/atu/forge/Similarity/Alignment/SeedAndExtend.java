@@ -6,8 +6,6 @@ import java.util.concurrent.StructuredTaskScope;
 // A record for each seed.
 record Seed (int queryIndex, int subjectIndex) {}
 
-// A record for each extension. This helps prevent duplicates.
-record Extension (int start, String text) {}
 /*
     A 2 stage local sequence matching algorithm.
     Begins with a seeding phase where short exact matching sequences are found.
@@ -16,7 +14,7 @@ record Extension (int start, String text) {}
     This implementation uses a greedy no-gap extension, and returns the full list of matches, filtering out duplicates.
  */
 public class SeedAndExtend {
-    public static String[] align(String subject, String query, int kmer_length) {
+    public static Extension[] align(String subject, String query, int kmer_length) {
         List<Seed> seeds = seed(subject, query, kmer_length);
         Extension[] extensions = extend(seeds, subject, query, kmer_length);
 
@@ -27,14 +25,19 @@ public class SeedAndExtend {
             filtered_extensions.merge(ext.start(), ext.text(), (existing, candidate) -> existing.length() >= candidate.length() ? existing : candidate);
         }
 
-        List<String> results = new ArrayList<>(filtered_extensions.values());
+/*        List<String> results = new ArrayList<>(filtered_extensions.values());
 
         // Also need to filter out any alignment that is a subset of another (not if they are the same length), regardless of starting position.
-        results.removeIf(res1 -> results.stream().anyMatch(res2 -> !res1.equals(res2) && res2.contains(res1)));
+        results.removeIf(res1 -> results.stream().anyMatch(res2 -> !res1.equals(res2) && res2.contains(res1)));*/
 
-        return results.toArray(new String[0]);
+        List<Extension> results = new ArrayList<>();
+        // Add every extension post filtering back to a list.
+        filtered_extensions.forEach((k, v) -> results.add(new Extension(k, v)));
+        // Also need to filter out any alignment that is a subset of another (not if they are the same length), regardless of starting position.
+        results.removeIf(res1 -> results.stream().anyMatch(res2 -> !res1.text().equals(res2.text()) && res2.text().contains(res1.text())));
+
+        return results.toArray(new Extension[0]);
     }
-
     // The seeding part should find exact matching parts of the 2 sequences.
     private static List<Seed> seed(String subject, String query, int kmer_length) {
         // The value needs to be a list as the same combination may appear multiple times.
