@@ -7,9 +7,9 @@ import java.util.Map;
 
 // Global alignment algorithm that aligns entire sequences filling in gaps where necessary.
 public class NeedlemanWunsch {
-    private static final int MATCH = 1;
-    private static final int MISMATCH = -1;
-    private static final int GAP = -1;
+    private static int MATCH = 1;
+    private static int MISMATCH = -1;
+    private static int GAP = -1;
 
 
     public static String[] align(String s1, String s2) {
@@ -240,12 +240,22 @@ public class NeedlemanWunsch {
                 if(match_score != null) {
                     return match_score;
                 } else {
-                    match_score = scoring_matrix.get("**");
+                    return scoring_matrix.get("**");
                 }
             }
         }
-
-        // If nothing has been found at all, i.e., there were no wildcard characters in the map, return the default mismatch.
-        return MISMATCH;
     }
+
+    // Getters and Setters below
+    public static void setMATCH(int new_value) { MATCH = new_value; }
+
+    public static void setMISMATCH(int new_value) { MISMATCH = new_value; }
+
+    public static void setGAP(int new_value) { GAP = new_value; }
+
+    public static int getMATCH() { return MATCH; }
+
+    public static int getMISTMATCH() { return MISMATCH; }
+
+    public static int getGAP() { return GAP; }
 }
