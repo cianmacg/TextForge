@@ -255,7 +255,7 @@ public class NeedlemanWunsch {
 
     public static int getMATCH() { return MATCH; }
 
-    public static int getMISTMATCH() { return MISMATCH; }
+    public static int getMISMATCH() { return MISMATCH; }
 
     public static int getGAP() { return GAP; }
 }

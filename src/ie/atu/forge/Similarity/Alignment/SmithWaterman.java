@@ -7,9 +7,9 @@ import java.util.Map;
 
 // Local alignment algorithm
 public class SmithWaterman {
-    private static final int MATCH = 2;
-    private static final int MISMATCH = -1;
-    private static final int GAP = -2;
+    private static int MATCH = 2;
+    private static int MISMATCH = -1;
+    private static int GAP = -2;
 
     public static String[] align(String s1, String s2) {
         char[][] alignments = align(s1.toCharArray(), s2.toCharArray());
@@ -246,4 +246,17 @@ public class SmithWaterman {
         // If nothing has been found at all, i.e., there were no wildcard characters in the map, return the default mismatch.
         return MISMATCH;
     }
+
+    // Getters and Setters below
+    public static void setMATCH(int new_value) { MATCH = new_value; }
+
+    public static void setMISMATCH(int new_value) { MISMATCH = new_value; }
+
+    public static void setGAP(int new_value) { GAP = new_value; }
+
+    public static int getMATCH() { return MATCH; }
+
+    public static int getMISMATCH() { return MISMATCH; }
+
+    public static int getGAP() { return GAP; }
 }
