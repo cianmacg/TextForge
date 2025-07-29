@@ -10,6 +10,7 @@ public class StringExporter {
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(path + "Output.txt"));
         writer.write(output);
+        writer.close();
     }
 
     public static void toFile(String[] output, String path) throws IOException {
