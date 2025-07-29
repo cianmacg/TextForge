@@ -2,7 +2,7 @@ package ie.atu.forge.Tokenisers;
 
 import java.util.Arrays;
 
-record ByteSequence(byte[] bytes) {
+public record ByteSequence(byte[] bytes) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
