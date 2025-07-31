@@ -6,11 +6,26 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.StructuredTaskScope;
 
+record Pair(int first, int second) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pair)) return false;
+        Pair other = (Pair) o;
+        return (this.first == other.first) && (this.second == other.second);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(first, second);
+    }}
+
 public class BPE {
     private boolean trained = false;
     private Map<Integer, ByteSequence> vocab = new HashMap<>();
     private Map<ByteSequence, Integer> inverse_vocab = new HashMap<>();
     private int token_count = 256; // We will always initialise with 256 tokens.
+    private final Map<Pair, Integer> pair_freq = new HashMap<>();
 
     public BPE() {
         // Initialise vocabulary with all byte representations of characters (UTF-8).
@@ -83,59 +98,95 @@ public class BPE {
 
         int[] token_corpus = encode(corpus);
 
+        // Initialise pair frequency counts.
+        countPairs(token_corpus);
+
         int count = vocab.size();
-        int max_iter = vocab_size + 256 + 50; // 256 is the base vocab size (single characters), and the 50 is just to be safe.
+        int max_iter = vocab_size + count; // 256 (count) is the base vocab size (single characters)
         // Now that our vocabulary has been initialised, we can expand it by merging tokens together. Using count in place of vocab.size, as they should be the same anyway.
         while(count < max_iter) {
-            int[] best_pair = findBestPair(token_corpus);
-            int token_id = addToken(best_pair);
+            Pair best_pair = findBestPair(token_corpus);
+            if(best_pair!=null) {
+                int left = best_pair.first(), right = best_pair.second();
+                int token_id = addToken(left, right);
 
-            // Update the token corpus with the new merged token.
-            token_corpus = mergeTokens(token_id, best_pair, token_corpus);
-            count++;
+                // Update the token corpus with the new merged token.
+                token_corpus = mergeTokens(token_id, left, right, token_corpus);
+                countPair(token_id, left, right, token_corpus);
+                count++;
+            } else {   // If p is null, it means there are no pairs left to merge. We need to end here.
+                System.out.println("No pairs left to be merged.");
+                return;
+            }
         }
 
         trained = true;
     }
 
-    private int[] findBestPair(int[] corpus) {
-        Map<Integer[], Integer> candidates = new HashMap<>();
+    // Used to count initial pairs
+    private void countPairs(int[] corpus) {
+        int corpus_len = corpus.length;
 
-        for(int i = 0; i < corpus.length - 1; i++) {
-            candidates.merge(new Integer[]{corpus[i], corpus[i + 1]}, 1, Integer::sum);
+        int i = 0;
+        while(i < corpus_len - 1) {
+            Pair p = new Pair(corpus[i], corpus[i+1]);
+            pair_freq.merge(p, 1, Integer::sum);
+
+            i++;
         }
-
-
-        if (candidates.isEmpty()) {
-            // Nothing to compare, so return empty result
-            return new int[0];
-        }
-
-        Integer[] tokens = Collections.max(candidates.entrySet(), Map.Entry.comparingByValue()).getKey();
-        return Arrays.stream(tokens).mapToInt(Integer::intValue).toArray();
     }
 
-    // Adds a new token to the maps and returns the integer representation.
-    private int addToken(int[] old_tokens) {
-        List<ByteSequence> new_bs = new ArrayList<>();
-        int bs_length = 0;
-        for (Integer token : old_tokens) {
-            ByteSequence bs = vocab.get(token);
-            new_bs.add(bs);
-            bs_length += bs.bytes().length;
-        }
+    // Once a pair has been merged, we can remove it from the pair_freq count, and count for the new token instead.
+    private void countPair(int new_token, int old_1, int old_2, int[] corpus) {
+        // No longer need the frequency count of the old pair, as we've already merged it.
+        pair_freq.remove(new Pair(old_1, old_2));
+        int corpus_len = corpus.length;
+        if(corpus_len <= 1) return;
+        // Count the pair frequencies for the new merged token.
+        // Performing a check outside the loop for the first and last tokens can save us doing many checks inside the loop.
+        if(corpus[0] == new_token) pair_freq.put(new Pair(new_token, corpus[1]), 1);
+        if(corpus[corpus_len - 1] == new_token) pair_freq.merge(new Pair(corpus[corpus_len - 2], new_token), 1, Integer::sum);
 
-        // Add all bytes from the merged tokens to a new ByteSequence to represent the new token.
-        byte[] token_bytes = new byte[bs_length];
+        // We've already checked the first and last values, hence i = 1 and corpus_len - 2.
+        boolean skip_next = false; // This is to prevent double counting.
+        int i = 1;
+        while(i < corpus_len - 1) {
+            if(corpus[i] == new_token) {
+                pair_freq.merge(new Pair(corpus[i - 1], new_token), 1, Integer::sum);
+                if(!(corpus[i + 1] == new_token)) pair_freq.merge(new Pair(new_token, corpus[i + 1]), 1, Integer::sum); // We'll catch this on the next loop. Don't want to double count.
+            }
+
+            i++;
+        }
+    }
+
+    private Pair findBestPair(int[] corpus) {
+        Pair p = null;
         int count = 0;
-        for (ByteSequence bs : new_bs) {
-            for (byte b : bs.bytes()) {
-                token_bytes[count] = b;
-                count++;
+
+        for(Map.Entry<Pair, Integer> pair: pair_freq.entrySet()) {
+            if(pair.getValue() > count) {
+                p = pair.getKey();
+                count = pair.getValue();
             }
         }
 
-        ByteSequence new_token = new ByteSequence(token_bytes);
+        return p;
+    }
+
+    // Adds a new token to the maps and returns the integer representation.
+    private int addToken(int old_1, int old_2) {
+        // Merge the bytes from the old tokens.
+        byte[] b1 = vocab.get(old_1).bytes();
+        byte[] b2 = vocab.get(old_2).bytes();
+
+        byte[] new_b = new byte[b1.length + b2.length];
+
+        System.arraycopy(b1, 0, new_b, 0, b1.length);
+        System.arraycopy(b2, 0, new_b, b1.length, b2.length);
+
+        // Create a new ByteSequence for our new token, from the bytes of the old tokens.
+        ByteSequence new_token = new ByteSequence(new_b);
 
         vocab.put(token_count, new_token);
         inverse_vocab.put(new_token, token_count);
@@ -144,17 +195,16 @@ public class BPE {
         return token_count - 1;
     }
 
-    private int[] mergeTokens(int merged_token, int[] old_tokens, int[] corpus) {
+    private int[] mergeTokens(int merged_token, int old_1, int old_2, int[] corpus) {
         int corpus_len = corpus.length;
-
         if(corpus_len == 0) return corpus;
 
-        List<Integer> updated_corpus = new ArrayList<>();
+        List<Integer> updated_corpus = new ArrayList<>(corpus_len);
 
         // Look over the corpus for places to merge the tokens.
         int i = 0;
         while(i < corpus_len - 1){
-            if(corpus[i] == old_tokens[0] && corpus[i + 1] == old_tokens[1]) {
+            if(corpus[i] == old_1 && corpus[i + 1] == old_2) {
                 updated_corpus.add(merged_token);
                 i+=2;
             }
@@ -165,9 +215,16 @@ public class BPE {
         }
 
         // Did we merge the last token? Or does it need to be added?
-        if(updated_corpus.isEmpty() || !(updated_corpus.getLast() == merged_token)) updated_corpus.add(corpus[i]);
+        if (i < corpus_len) {
+            updated_corpus.add(corpus[i]);
+        }
 
-        return updated_corpus.stream().mapToInt(Integer::intValue).toArray();
+        int[] result = new int[updated_corpus.size()];
+        for (int j = 0; j < updated_corpus.size(); j++) {
+            result[j] = updated_corpus.get(j);
+        }
+
+        return result;
     }
 
     public Map<Integer, ByteSequence> getVocab() {
@@ -267,7 +324,7 @@ public class BPE {
             reader.lines().forEach((line) -> {
                 if(line.contains("{") || line.contains("}")) return;
 
-                String[] parts = line.replace("[\",]", "").split(": ");
+                String[] parts = line.replaceAll("[^a-zA-Z0-9 :]", "").split(": ");
 
                 int key = Integer.parseInt(parts[0]);
                 ByteSequence bytes = new ByteSequence(parseHexToByte(parts[1]));
