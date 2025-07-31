@@ -330,6 +330,7 @@ public class BPE {
                 ByteSequence bytes = new ByteSequence(parseHexToByte(parts[1]));
 
                 vocabulary.put(key, bytes);
+                inverse_vocabulary.put(bytes, key); // Simply the other way around. Used for encoding.
             });
 
             scope.join().throwIfFailed();
@@ -346,7 +347,7 @@ public class BPE {
         byte[] bytes = new byte[hexes.length];
 
         for(int i = 0; i < bytes.length; i++) {
-            bytes[i] = (byte) Integer.parseInt(hexes[i]);
+            bytes[i] = (byte) Integer.parseInt(hexes[i], 16);
         }
 
         return bytes;
