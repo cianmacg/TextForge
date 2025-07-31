@@ -1,14 +1,15 @@
 package ie.atu.forge.Tokenisers;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.StructuredTaskScope;
 
 public class BPE {
     private boolean trained = false;
-    private final Map<Integer, ByteSequence> vocab = new HashMap<>();
-    private final Map<ByteSequence, Integer> inverse_vocab = new HashMap<>();
+    private Map<Integer, ByteSequence> vocab = new HashMap<>();
+    private Map<ByteSequence, Integer> inverse_vocab = new HashMap<>();
     private int token_count = 256; // We will always initialise with 256 tokens.
 
     public BPE() {
@@ -177,12 +178,12 @@ public class BPE {
         return inverse_vocab;
     }
 
+
     // Saves the current vocabulary map to a JSON file. Path is the location to save the vocabulary. ByteSequences are represented in Hex.
     public void vocabToJson(String path) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_vocab.json"));
 
         writer.write('{');
-        writer.newLine();
 
         boolean first_token = true;
         for (Map.Entry<ByteSequence, Integer> mapping : inverse_vocab.entrySet()) {
@@ -252,5 +253,45 @@ public class BPE {
 
     public void inverseVocabToJson() throws IOException {
         inverseVocabToJson("");
+    }
+
+
+    // Loads vocab from Json file. Will also populate inverse_vocab. Vocab has integer: hex. Where hex is the byte representation.
+    public void loadVocabFromJson(String path) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(path));
+
+        ConcurrentMap<Integer, ByteSequence> vocabulary = new ConcurrentHashMap<>();
+        ConcurrentMap<ByteSequence, Integer> inverse_vocabulary = new ConcurrentHashMap<>();
+
+        try(var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+            reader.lines().forEach((line) -> {
+                if(line.contains("{") || line.contains("}")) return;
+
+                String[] parts = line.replace("[\",]", "").split(": ");
+
+                int key = Integer.parseInt(parts[0]);
+                ByteSequence bytes = new ByteSequence(parseHexToByte(parts[1]));
+
+                vocabulary.put(key, bytes);
+            });
+
+            scope.join().throwIfFailed();
+            vocab = new HashMap<>(vocabulary);
+            inverse_vocab = new HashMap<>(inverse_vocabulary);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] parseHexToByte(String hex_codes) {
+        String[] hexes = hex_codes.split(" ");
+        byte[] bytes = new byte[hexes.length];
+
+        for(int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) Integer.parseInt(hexes[i]);
+        }
+
+        return bytes;
     }
 }
