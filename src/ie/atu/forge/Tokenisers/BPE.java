@@ -107,12 +107,12 @@ public class BPE {
         while(count < maxIter) {
             Pair best_pair = findBestPair(tokenCorpus);
             if(best_pair!=null) {
-                int left = best_pair.first(), right = best_pair.second();
-                int tokenId = addToken(left, right);
+                int leftToken = best_pair.first(), rightToken = best_pair.second();
+                int tokenId = addToken(leftToken, rightToken);
 
                 // Update the token corpus with the new merged token.
-                tokenCorpus = mergeTokens(tokenId, left, right, tokenCorpus);
-                countPair(tokenId, left, right, tokenCorpus);
+                tokenCorpus = mergeTokens(tokenId, leftToken, rightToken, tokenCorpus);
+                countPair(tokenId, leftToken, rightToken, tokenCorpus);
                 count++;
             } else {   // If p is null, it means there are no pairs left to merge. We need to end here.
                 System.out.println("No pairs left to be merged.");
@@ -314,6 +314,10 @@ public class BPE {
 
     // Loads vocab from Json file. Will also populate inverse_vocab. Vocab has integer: hex. Where hex is the byte representation.
     public void loadVocabFromJson(String path) throws IOException {
+        if(trained) {
+            System.out.println("Already trained.");
+            return;
+        }
         BufferedReader reader = new BufferedReader(new FileReader(path));
 
         ConcurrentMap<Integer, ByteSequence> vocabulary = new ConcurrentHashMap<>();
@@ -335,6 +339,8 @@ public class BPE {
             scope.join().throwIfFailed();
             vocab = new HashMap<>(vocabulary);
             inverseVocab = new HashMap<>(inverseVocabulary);
+
+            trained = true;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
