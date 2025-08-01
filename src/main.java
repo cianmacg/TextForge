@@ -1,16 +1,25 @@
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import ie.atu.forge.Similarity.Alignment.SeedAndExtend;
-import ie.atu.forge.Similarity.Alignment.Extension;
-
+import ie.atu.forge.Tokenisers.BPE;
+import ie.atu.forge.ToolBox.StringExporter;
 public class main {
     public static void main(String[] args) throws IOException {
-        String s1 = "ABBACDDABBABCDCDA";
-        String s2 = "ACCDDBABBADGHDCDA";
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader("1984.txt"));
+        FileReader fr = new FileReader("1984.txt");
+        reader.lines().forEach(sb::append);
 
-        Extension[] exts = SeedAndExtend.align(s1, s2, 2);
-        for(Extension ext: exts) {
-            System.out.printf("Start: %d, Alignment: %s \n", ext.start(), ext.text());
-        }
+        BPE tokens = new BPE();
+        long startTime = System.nanoTime();
+        tokens.train(sb.toString(), 2000);
+        long endTime = System.nanoTime();
+        System.out.printf("Time: %d \n", (endTime - startTime) / 1000000);
+/*        tokens.loadVocabFromJson("bpe_vocab.json");
+        String test = "A testing string for our BPE implementation.";
+        int[] encoding = tokens.encode(test);*/
+
+/*        System.out.println(tokens.decode(encoding));*/
     }
 }
