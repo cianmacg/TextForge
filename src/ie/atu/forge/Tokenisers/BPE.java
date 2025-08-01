@@ -26,6 +26,7 @@ public class BPE {
     private Map<ByteSequence, Integer> inverseVocab = new HashMap<>();
     private int tokenCount = 256; // We will always initialise with 256 tokens.
     private final Map<Pair, Integer> pairFreq = new HashMap<>();
+    private final List<Integer> updatedCorpus = new ArrayList<>(); // mergeTokens is called many times. Instead of creating a new list each time, re-use this list.
 
     public BPE() {
         // Initialise vocabulary with all byte representations of characters (UTF-8).
@@ -194,11 +195,11 @@ public class BPE {
         return tokenCount - 1;
     }
 
+    // During the merge process, we can also count the pair frequencies
     private int[] mergeTokens(int mergedToken, int leftToken, int rightToken, int[] corpus) {
         int len = corpus.length;
         if(len == 0) return corpus;
-
-        List<Integer> updatedCorpus = new ArrayList<>(len);
+        updatedCorpus.clear();
 
         // Look over the corpus for places to merge the tokens.
         int i = 0;
