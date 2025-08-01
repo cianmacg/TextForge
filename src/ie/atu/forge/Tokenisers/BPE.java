@@ -26,7 +26,6 @@ public class BPE {
     private Map<ByteSequence, Integer> inverseVocab = new HashMap<>();
     private int tokenCount = 256; // We will always initialise with 256 tokens.
     private final Map<Pair, Integer> pairFreq = new HashMap<>();
-    private final List<Integer> updatedCorpus = new ArrayList<>(); // mergeTokens is called many times. Instead of creating a new list each time, re-use this list.
 
     public BPE() {
         // Initialise vocabulary with all byte representations of characters (UTF-8).
@@ -195,34 +194,34 @@ public class BPE {
         return tokenCount - 1;
     }
 
-    // During the merge process, we can also count the pair frequencies
+    // Merge 2 tokens together and update the corpus.
     private int[] mergeTokens(int mergedToken, int leftToken, int rightToken, int[] corpus) {
         int len = corpus.length;
         if(len == 0) return corpus;
-        updatedCorpus.clear();
 
-        // Look over the corpus for places to merge the tokens.
+        int[] updatedCorpus = new int[corpus.length]; // maximum possible size;
+        int outputIndex = 0;
         int i = 0;
-        while(i < len - 1){
-            if(corpus[i] == leftToken && corpus[i + 1] == rightToken) {
-                updatedCorpus.add(mergedToken);
-                i+=2;
-            }
-            else {
-                updatedCorpus.add(corpus[i]);
+        while(i < len - 1) { // -1 ensures we don't get an out-of-bounds exception while checking for rightToken
+            if(corpus[i] == leftToken && corpus[i + 1] == rightToken) { // Time to merge. Add the new token in place of the left and right tokens.
+                updatedCorpus[outputIndex] = mergedToken; // The position in the new array should be the same as the old array minus the merges up to this point.
+                outputIndex++; // We just merged, update.
+                i+=2; // Since both tokens are merged, we can skip a position in the corpus.
+            } else {    // No merge occurred, add the left token and move on to the next position.
+                updatedCorpus[outputIndex] = corpus[i];
+                outputIndex++;
                 i++;
             }
         }
 
         // Did we merge the last token? Or does it need to be added?
         if (i < len) {
-            updatedCorpus.add(corpus[i]);
+            updatedCorpus[outputIndex] = corpus[i];
+            outputIndex++;
         }
 
-        int[] result = new int[updatedCorpus.size()];
-        for (int j = 0; j < updatedCorpus.size(); j++) {
-            result[j] = updatedCorpus.get(j);
-        }
+        int[] result = new int[outputIndex];
+        System.arraycopy(updatedCorpus, 0, result, 0, result.length);
 
         return result;
     }
