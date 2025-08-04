@@ -3,7 +3,7 @@ package ie.atu.forge.Vectorisers;
 import java.util.*;
 
 public class TFIDF {
-    private final Map<String, Integer> documentFreq = new HashMap<>(); // Map of word hashCodes to frequency count across all documents.
+    private final Map<String, Integer> corpusTermFreq = new HashMap<>(); // Map of words to frequency count across all documents.
     private int documentCount = 0;
 
     // Add a document to documentFreq
@@ -24,7 +24,7 @@ public class TFIDF {
 
     private void addTermsToDocumentFrequency(Set<String> terms) {
         for(String term: terms) {
-            documentFreq.merge(term, 1, Integer::sum);
+            corpusTermFreq.merge(term, 1, Integer::sum);
         }
     }
 
@@ -49,10 +49,15 @@ public class TFIDF {
 
         // Begin calculations
         for(String term: addedTerms) {
-            double tf = (double) termCounts.get(term) / len;
-            double idf = Math.log((double) documentCount / (1.0d + documentFreq.get(term)) ); // Adding 1.0d to the denominator here to prevent zeroing out of scores (log 1)
-
-            termScores.put(term, (tf * idf));
+            int docFreq = corpusTermFreq.getOrDefault(term, 0);
+            // If the user stated the document is not new, but actually it is, it is possible a term doesn't appear in the documentFreq.
+            if(docFreq == 0) {
+                termScores.put(term, 0.0d);
+            } else {
+                double tf = (double) termCounts.get(term) / len;
+                double idf = Math.log((1.0d + documentCount) / (1.0d + corpusTermFreq.get(term)) ); // Adding 1.0d to the denominator here to prevent zeroing out of scores (log 1)
+                termScores.put(term, (tf * idf));
+            }
         }
 
         return termScores;
@@ -78,12 +83,12 @@ public class TFIDF {
             addTermsToDocumentFrequency(addedTerms);    // Add terms to overall document frequency (if it hasn't previously been added.
         }
 
-        double[] vector = new double[documentFreq.size()];
+        double[] vector = new double[corpusTermFreq.size()];
         int pos = 0;
         // Begin calculations
-        for(Map.Entry<String, Integer> term: documentFreq.entrySet()) {
+        for(Map.Entry<String, Integer> term: corpusTermFreq.entrySet()) {
             double tf = (double) termCounts.getOrDefault(term.getKey(), 0) / len;
-            double idf = Math.log((double) documentCount / (1.0d + term.getValue()));
+            double idf = Math.log((1.0d + documentCount) / (1.0d + term.getValue()));
 
             vector[pos] = (tf * idf);
             pos++;
@@ -113,5 +118,9 @@ public class TFIDF {
         System.arraycopy(filter, 0, splits, 0, counter);
 
         return splits;
+    }
+
+    public Map<String, Integer> getCorpusTermFreq() {
+        return new HashMap<>(corpusTermFreq);
     }
 }
