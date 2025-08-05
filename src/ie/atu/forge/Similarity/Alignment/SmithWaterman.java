@@ -7,18 +7,39 @@ import java.util.Map;
 
 // Local alignment algorithm
 public class SmithWaterman {
-    private static int MATCH = 2;
-    private static int MISMATCH = -1;
-    private static int GAP = -2;
+    private int MATCH = 2;
+    private int MISMATCH = -1;
+    private int GAP = -2;
+    private Map<String, Integer> scoringMatrix = null;
 
-    public static String[] align(String s1, String s2) {
-        char[][] alignments = align(s1.toCharArray(), s2.toCharArray());
+    public String[] align(String s1, String s2) {
+        if(scoringMatrix == null) return alignWithoutMatrix(s1, s2);
+        else return alignWithMatrix(s1, s2);
+    }
+
+    public char[][] align(char[] c1, char[] c2) {
+        if(scoringMatrix == null) return alignWithoutMatrix(c1, c2);
+        else return alignWithMatrix(c1, c2);
+    }
+
+    public String[] align(String s1, String s2, boolean useScoringMatrix) {
+        if(!useScoringMatrix) return alignWithoutMatrix(s1, s2);
+        else return alignWithMatrix(s1, s2);
+    }
+
+    public char[][] align(char[] c1, char[] c2, boolean useScoringMatrix) {
+        if(!useScoringMatrix) return alignWithoutMatrix(c1, c2);
+        else return alignWithMatrix(c1, c2);
+    }
+
+    private String[] alignWithoutMatrix(String s1, String s2) {
+        char[][] alignments = alignWithoutMatrix(s1.toCharArray(), s2.toCharArray());
 
         // If the user inputted strings, give them strings back.
         return new String[]{ new String(alignments[0]), new String(alignments[1]) };
     }
 
-    public static char[][] align(char[] s1, char[] s2) {
+    private char[][] alignWithoutMatrix(char[] s1, char[] s2) {
         int col = s1.length;
         int row = s2.length;
 
@@ -63,14 +84,16 @@ public class SmithWaterman {
         return traceback(scores, s1, s2, maxi, maxj);
     }
 
-    public static String[] align(String s1, String s2, Map<String, Integer> scoring_matrix) {
-        char[][] alignments = align(s1.toCharArray(), s2.toCharArray(), scoring_matrix);
+    private String[] alignWithMatrix(String s1, String s2) {
+        char[][] alignments = alignWithMatrix(s1.toCharArray(), s2.toCharArray());
 
         // If the user inputted strings, give them strings back.
         return new String[]{ new String(alignments[0]), new String(alignments[1]) };
     }
 
-    public static char[][] align(char[] s1, char[] s2, Map<String, Integer> scoring_matrix) {
+    private char[][] alignWithMatrix(char[] s1, char[] s2) {
+        if(scoringMatrix == null) throw new IllegalStateException("No scoring matrix set.");
+
         int col = s1.length;
         int row = s2.length;
 
@@ -86,7 +109,7 @@ public class SmithWaterman {
                 char c2 = s2[j - 1];
 
                 // Get the score from the scoring matrix passed by the user.
-                int score = getScore(c1, c2, scoring_matrix);
+                int score = getScore(c1, c2, scoringMatrix);
                 // Match or Mismatch?
                 scores[i][j] = Math.max(Math.max(
                                 0,
@@ -107,22 +130,10 @@ public class SmithWaterman {
             }
         }
 
-        return traceback(scoring_matrix, scores, s1, s2, maxi, maxj);
+        return traceback(scoringMatrix, scores, s1, s2, maxi, maxj);
     }
 
-    public static String[] align(String s1, String s2, String matrix_path) throws IOException {
-        Map<String, Integer> scoring_matrix = MatrixLoader.load(matrix_path);
-
-        return align(s1, s2, scoring_matrix);
-    }
-
-    public static char[][] align(char[] s1, char[] s2, String matrix_path) throws IOException {
-        Map<String, Integer> scoring_matrix = MatrixLoader.load(matrix_path);
-
-        return align(s1, s2, scoring_matrix);
-    }
-
-    private static char[][] traceback(int[][] scores, char[] s1, char[] s2, int maxi, int maxj) {
+    private char[][] traceback(int[][] scores, char[] s1, char[] s2, int maxi, int maxj) {
         // This is the maximum possible length the alignments could be.
         int index = maxi + maxj;
         char[] maxAlignA = new char[index];
@@ -169,7 +180,7 @@ public class SmithWaterman {
         return new char[][]{ actualAlignA, actualAlignB };
     }
 
-    private static char[][] traceback(Map<String, Integer> scoring_matrix, int[][] scores, char[] s1, char[] s2, int maxi, int maxj) {
+    private char[][] traceback(Map<String, Integer> scoring_matrix, int[][] scores, char[] s1, char[] s2, int maxi, int maxj) {
         // This is the maximum possible length the alignments could be.
         int index = maxi + maxj;
         char[] maxAlignA = new char[index];
@@ -218,7 +229,7 @@ public class SmithWaterman {
         return new char[][]{ actualAlignA, actualAlignB };
     }
 
-    private static int getScore(char c1, char c2, Map<String, Integer> scoring_matrix) {
+    private int getScore(char c1, char c2, Map<String, Integer> scoring_matrix) {
         // This is the difference between the non-score matrix version and this version
         // Try to get the score
         Integer match_score = scoring_matrix.get("" + c1 + c2);
@@ -248,15 +259,25 @@ public class SmithWaterman {
     }
 
     // Getters and Setters below
-    public static void setMATCH(int new_value) { MATCH = new_value; }
+    public void setMATCH(int new_value) { MATCH = new_value; }
 
-    public static void setMISMATCH(int new_value) { MISMATCH = new_value; }
+    public void setMISMATCH(int new_value) { MISMATCH = new_value; }
 
-    public static void setGAP(int new_value) { GAP = new_value; }
+    public void setGAP(int new_value) { GAP = new_value; }
 
-    public static int getMATCH() { return MATCH; }
+    public int getMATCH() { return MATCH; }
 
-    public static int getMISMATCH() { return MISMATCH; }
+    public int getMISMATCH() { return MISMATCH; }
 
-    public static int getGAP() { return GAP; }
+    public int getGAP() { return GAP; }
+
+    // Sets the scoring matrix to a map provided by the user.
+    public void setScoringMatrix(Map<String, Integer> matrix) {
+        scoringMatrix = matrix;
+    }
+
+    // Loads a scoring matrix from a text file.
+    public void loadScoringMatrix(String path) throws IOException {
+        scoringMatrix = MatrixLoader.load(path);
+    }
 }
