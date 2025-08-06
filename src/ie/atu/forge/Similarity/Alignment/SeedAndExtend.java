@@ -15,7 +15,7 @@ record Seed (int queryIndex, int subjectIndex) {}
  */
 public class SeedAndExtend {
     public static Extension[] align(String subject, String query, int kmerLength, SmithWaterman smithWaterman, int windowSize) throws Exception {   // smithWaterman - controls whether to use Greedy or Smith-Waterman extension. Null = Greedy.
-        if(subject == null || subject.isEmpty() || query == null || query.isEmpty() || kmerLength <= 0) return new Extension[0]; // No alignments can be made on empty strings. No seeds can be generated is kmerLength is <= 0.
+        if(subject == null || subject.isEmpty() || query == null || query.isEmpty() || kmerLength <= 0) return new Extension[0]; // No alignments can be made on empty strings. No seeds can be generated as kmerLength is <= 0.
 
         List<Seed> seeds = seed(subject, query, kmerLength);
         Extension[] extensions;
@@ -29,6 +29,7 @@ public class SeedAndExtend {
         return extensions;
     }
 
+    // If a SmithWaterman Object is not being passed, this should be used.
     public static Extension[] align(String subject, String query, int kmerLength) {
         if(subject == null || subject.isEmpty() || query == null || query.isEmpty() || kmerLength <= 0) return new Extension[0];
 
@@ -70,7 +71,7 @@ public class SeedAndExtend {
 
             for(Seed seed: seeds) {
                 // Each seed can be checked independently.
-                var task = scope.fork(() -> extendSeeds(seed, subject, query, kmerLength));
+                var task = scope.fork(() -> extendSeed(seed, subject, query, kmerLength));
                 tasks.add(task);
             }
 
@@ -88,7 +89,7 @@ public class SeedAndExtend {
     }
 
     // Extends a single seed.
-    private static Extension extendSeeds(Seed seed, String subject, String query, int kmerLength) {
+    private static Extension extendSeed(Seed seed, String subject, String query, int kmerLength) {
         int sStart = seed.subjectIndex();
         int qStart = seed.queryIndex();
         int sEnd = sStart + kmerLength - 1;
@@ -111,18 +112,19 @@ public class SeedAndExtend {
     }
 
     private static Extension[] swExtend(List<Seed> seeds, String subject, String query, int kmerLength, SmithWaterman smithWaterman, int windowSize) throws Exception {
+        int halfWindow = (int) ((windowSize + 1) * 0.5); // Adding 1 to get a rounded up, even number.
         try(var scope = new StructuredTaskScope.ShutdownOnFailure()) {
             List<StructuredTaskScope.Subtask<Extension>> tasks = new ArrayList<>();
 
             for(Seed seed: seeds) {
-                var task = scope.fork(() -> swExtendSeed(seed, subject, query, kmerLength, smithWaterman, windowSize));
+                var task = scope.fork(() -> swExtendSeed(seed, subject, query, kmerLength, smithWaterman, halfWindow));
                 tasks.add(task);
             }
 
             scope.join().throwIfFailed();
             Extension[] extensions = tasks.stream().map(StructuredTaskScope.Subtask::get).toArray(Extension[]::new);
 
-            return filterSmithWaterman(extensions);
+            return filterExtensions(extensions, kmerLength);
 
         } catch (Exception e) {
             throw new Exception(e);
@@ -130,9 +132,7 @@ public class SeedAndExtend {
     }
 
     // Smith-Waterman returns 2 strings (1 for subject, 1 for query). However, an extension will only have a single string.
-    private static Extension swExtendSeed(Seed seed, String subject, String query, int kmerLength, SmithWaterman smithWaterman, int window) {
-        int halfWindow = (int) ((window + 1) * 0.5); // Adding 1 to get a rounded up, even number.
-
+    private static Extension swExtendSeed(Seed seed, String subject, String query, int kmerLength, SmithWaterman smithWaterman, int halfWindow) {
         int proposedSStart = seed.subjectIndex() - (halfWindow - kmerLength), proposedQStart = seed.queryIndex() - (halfWindow - kmerLength); // The window should start half the window - kmer length to the left of the seed start point.
         int proposedSEnd = seed.subjectIndex() + (halfWindow + kmerLength), proposedQEnd = seed.queryIndex() + (halfWindow + kmerLength);  // The window should end half the window + kmer length to the right of the seed start point. (1 kmer length the right will be the seed, the next will be the extended window).
 
@@ -178,8 +178,11 @@ public class SeedAndExtend {
         // If the 'smithWaterman' object has a scoring matrix load, the matrix will be used. Otherwise, the MATCH, MISTMATCH, GAP scores will be used.
         char[][] alignments = smithWaterman.align(subject.substring(actualSStart, actualSEnd).toCharArray(), query.substring(actualQStart, actualQEnd).toCharArray());
 
+        char[] subjectAlignment = alignments[0];
+        char[] queryAlignment = alignments[1];
+
         char[] consensusAlignment = findConsensusAlignment(alignments);
-        int[] startingPoints = findConsensusStartingPoints(alignments, consensusAlignment, subject, query);
+        int[] startingPoints = findConsensusStartingPoints(seed, subjectAlignment, queryAlignment, kmerLength, subject, query); // 'subject' will be used as the seed source.
 
         return new Extension(startingPoints[0], startingPoints[1], new String(consensusAlignment));
     }
@@ -196,20 +199,108 @@ public class SeedAndExtend {
             // Consensus
             if(subject[i] == query[i] && subject[i] != '-') alignment[pos++] = subject[i];
 
-            // Favour non-gaps.
+                // Favour non-gaps.
             else if(subject[i] == '-' && query[i] != '-') alignment[pos++] = query[i];
             else if(subject[i] != '-' && query[i] == '-') alignment[pos++] = subject[i];
 
             // Worst-case scenario (both gaps), skip.
         }
-        char[] finalAlignment = new char[pos];
-        System.arraycopy(alignment, 0, finalAlignment, 0, pos);
+
+        // If there are empty indices, adjust the size of the alignment array before returning it.
+        char[] finalAlignment;
+
+        // If there are no empty indices, just return alignment.
+        if(pos == alignment.length - 1) {
+            finalAlignment = alignment;
+        } else {
+            finalAlignment = new char[pos];
+            System.arraycopy(alignment, 0, finalAlignment, 0, pos);
+        }
+
         return finalAlignment;
     }
 
-    // At the moment, just returns 0s.
-    private static int[] findConsensusStartingPoints(char[][] alignments, char[] consensusAlignment, String subject, String query) {
-        return new int[]{0, 0};
+    // Need to recalculate the starting position of the alignments
+    private static int[] findConsensusStartingPoints(Seed seed, char[] subjectAlignment, char[] queryAlignment, int kmerLength, String subject, String query) {
+        int newSStart = 0, newQStart = 0; // New Subject Start, New Query Start
+        char[] originalSeed = subject.substring(seed.subjectIndex(), seed.subjectIndex() + kmerLength).toCharArray();
+        // We can find the new starting points by counting how many non-gap characters appear before the original seed. Then, subtract that value from the seed starting points.
+        int subjectStart = -1, queryStart = -1;
+        // Find the subject first
+        int count = 0;
+        // Have to be careful here. It is possible that during the extension process a gap was added in the middle of the seed.
+        for(int i = 0; i < subjectAlignment.length; i++) {
+            char c = subjectAlignment[i];
+
+            if(c == originalSeed[count]) { // Exact match between the alignment position and the seed position.
+                if(count == 0) subjectStart = i; // This means it is the first character of the seed. Keep track of this position.
+                count++;
+                if(count == kmerLength) break; // The full seed was found, end here.
+            } else if(c == '-' && count > 0) continue; // if this is the case, it means a gap has been found in the middle of a possible seed sequence, just ignore it and continues as before.
+            else {
+                if(c == originalSeed[0]) {
+                    subjectStart = i;
+                    count = 1;
+                } else {
+                    count = 0; // If the full seed hasn't been found, reset the count and start from the beginning of the seed.
+                    subjectStart = -1;
+                }
+            }
+        }
+
+        // Find query
+        count = 0;
+        // Have to be careful here. It is possible that during the extension process a gap was added in the middle of the seed.
+        for(int i = 0; i < queryAlignment.length; i++) {
+            char c = queryAlignment[i];
+
+            if(c == originalSeed[count]) { // Exact match between the alignment position and the seed position.
+                if(count == 0) queryStart = i; // This means it is the first character of the seed. Keep track of this position.
+                count++;
+                if(count == kmerLength) break; // The full seed was found, end here.
+            } else if(c == '-' && count > 0) continue; // if this is the case, it means a gap has been found in the middle of a possible seed sequence, just ignore it and continues as before.
+            else {
+                if(c == originalSeed[0]) {
+                    queryStart = i;
+                    count = 1;
+                } else {
+                    count = 0; // If the full seed hasn't been found, reset the count and start from the beginning of the seed.
+                    queryStart = -1;
+                }
+            }
+        }
+
+        if (subjectStart == -1 || queryStart == -1) {
+            // Sometimes, the original seed is lost in the Smith-Waterman process, as it won't be in the optimal alignment once the context window is expanded. In this case, just return the original seeds starting points.
+            System.out.println("Seed not found in alignment: Subject: " + new String(subjectAlignment) + "; Query: " + new String(queryAlignment) + "; Expected Seed: " + new String(originalSeed));
+            return new int[]{seed.subjectIndex(), seed.queryIndex()};
+        }
+
+        // We now have the starting position of the seed in the alignment. Find how many non-gap characters appear before this in the subject alignment.
+        int sNonGap = 0;
+        for(int i = 0; i < subjectStart; i++) {
+            if(subjectAlignment[i] != '-') sNonGap++;
+        }
+
+        int qNonGap = 0;
+        for(int i = 0; i < queryStart; i++) {
+            if(queryAlignment[i] != '-') qNonGap++;
+        }
+
+        newSStart = seed.subjectIndex() - sNonGap;
+        newQStart = seed.queryIndex() - qNonGap;
+
+        if (newSStart < 0 || newQStart < 0) {
+            throw new IllegalStateException("Invalid alignment start calculation");
+        }
+
+        int sOutOfBoundsCheck = newSStart + subjectAlignment.length - subject.length();
+        if(sOutOfBoundsCheck > 0) sOutOfBoundsCheck = Math.min(0,newSStart - sOutOfBoundsCheck); // Check to make sure the new start is within bounds. It + the alignment length should fall within the length of the original subject.
+
+        int qOutOfBoundsCheck = newQStart + queryAlignment.length - query.length();
+        if(qOutOfBoundsCheck > 0) qOutOfBoundsCheck = Math.min(0, newQStart - qOutOfBoundsCheck);
+
+        return new int[]{ newSStart, newQStart };
     }
 
     private static Extension[] filterExtensions(Extension[] extensions, int kmerLength) {
@@ -228,6 +319,6 @@ public class SeedAndExtend {
     }
 
     private static Extension[] filterSmithWaterman(Extension[] extensions) {
-        return new Extension[0];
+        return extensions;
     }
 }
