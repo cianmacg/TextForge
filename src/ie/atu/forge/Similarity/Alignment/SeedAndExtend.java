@@ -295,10 +295,10 @@ public class SeedAndExtend {
         }
 
         int sOutOfBoundsCheck = newSStart + subjectAlignment.length - subject.length();
-        if(sOutOfBoundsCheck > 0) sOutOfBoundsCheck = Math.min(0,newSStart - sOutOfBoundsCheck); // Check to make sure the new start is within bounds. It + the alignment length should fall within the length of the original subject.
+        if(sOutOfBoundsCheck > 0) newSStart = Math.min(0, newSStart - sOutOfBoundsCheck); // Check to make sure the new start is within bounds. It + the alignment length should fall within the length of the original subject.
 
         int qOutOfBoundsCheck = newQStart + queryAlignment.length - query.length();
-        if(qOutOfBoundsCheck > 0) qOutOfBoundsCheck = Math.min(0, newQStart - qOutOfBoundsCheck);
+        if(qOutOfBoundsCheck > 0) newQStart = Math.min(0, newQStart - qOutOfBoundsCheck);
 
         return new int[]{ newSStart, newQStart };
     }
