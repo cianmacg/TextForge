@@ -7,19 +7,53 @@ import java.util.Map;
 
 // Global alignment algorithm that aligns entire sequences filling in gaps where necessary.
 public class NeedlemanWunsch {
-    private static int MATCH = 1;
-    private static int MISMATCH = -1;
-    private static int GAP = -1;
+    private int MATCH = 1;
+    private int MISMATCH = -1;
+    private int GAP = -1;
+    private Map<String, Integer> scoringMatrix = null;
 
+    public String[] align(String s1, String s2) {
+        if(scoringMatrix == null) return alignWithoutMatrix(s1, s2);
+        else return alignWithMatrix(s1, s2);
+    }
 
-    public static String[] align(String s1, String s2) {
+    public char[][] align(char[] s1, char[] s2) {
+        if(scoringMatrix == null) return alignWithoutMatrix(s1, s2);
+        else return alignWithMatrix(s1, s2);
+    }
+
+    public String[] align(String s1, String s2, boolean useScoringMatrix) {
+        if(!useScoringMatrix) return alignWithoutMatrix(s1, s2);
+        else {
+            if(scoringMatrix == null) {
+                System.out.println("Tried to use Scoring Matrix, but it is null. Defaulting to non-matrix alignment.");
+                return alignWithoutMatrix(s1, s2);
+            }
+
+            return alignWithMatrix(s1, s2);
+        }
+    }
+
+    public char[][] align(char[] s1, char[] s2, boolean useScoringMatrix) {
+        if(!useScoringMatrix) return alignWithoutMatrix(s1, s2);
+        else {
+            if(scoringMatrix == null) {
+                System.out.println("Tried to use Scoring Matrix, but it is null. Defaulting to non-matrix alignment.");
+                return alignWithoutMatrix(s1, s2);
+            }
+
+            return alignWithMatrix(s1, s2);
+        }
+    }
+
+    public String[] alignWithoutMatrix(String s1, String s2) {
         char[][] alignments = align(s1.toCharArray(), s2.toCharArray());
 
         // If the user inputted strings, give them strings back.
         return new String[]{ new String(alignments[0]), new String(alignments[1]) };
     }
 
-    public static char[][] align(char[] s1, char[] s2) {
+    public char[][] alignWithoutMatrix(char[] s1, char[] s2) {
         int col = s1.length;
         int row = s2.length;
 
@@ -53,13 +87,13 @@ public class NeedlemanWunsch {
         return traceback(scores, s1, s2);
     }
 
-    public static String[] align(String s1, String s2, Map<String, Integer> scoring_matrix) {
-        char[][] alignments = align(s1.toCharArray(), s2.toCharArray(), scoring_matrix);
+    public String[] alignWithMatrix(String s1, String s2) {
+        char[][] alignments = alignWithMatrix(s1.toCharArray(), s2.toCharArray());
 
         return new String[]{new String(alignments[0]), new String(alignments[1])};
     }
 
-    public static char[][] align(char[] s1, char[] s2, Map<String, Integer> scoring_matrix) {
+    public char[][] alignWithMatrix(char[] s1, char[] s2) {
         try {
             int col = s1.length;
             int row = s2.length;
@@ -84,7 +118,7 @@ public class NeedlemanWunsch {
 
                     // This is the difference between the non-score matrix version and this version
                     // Try to get the score. If no score is found, the default MISMATCH score is applied.
-                    int match_score = getScore(c1, c2, scoring_matrix);
+                    int match_score = getScore(c1, c2, scoringMatrix);
 
                     // Match or Mismatch?
                     scores[i][j] = Math.max(Math.max(
@@ -98,25 +132,13 @@ public class NeedlemanWunsch {
                 }
             }
 
-            return traceback(scoring_matrix,scores, s1, s2);
+            return traceback(scoringMatrix,scores, s1, s2);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static char[][] align(char[] s1, char[] s2, String matrix_path) throws IOException {
-        Map<String, Integer> scoring_matrix = MatrixLoader.load(matrix_path);
-
-        return align(s1, s2, scoring_matrix);
-    }
-
-    public static String[] align(String s1, String s2, String matrix_path) throws IOException {
-        Map<String, Integer> scoring_matrix = MatrixLoader.load(matrix_path);
-
-        return align(s1, s2, scoring_matrix);
-    }
-
-    private static char[][] traceback(int[][] scores, char[] s1, char[] s2) {
+    private char[][] traceback(int[][] scores, char[] s1, char[] s2) {
         int col = s1.length;
         int row = s2.length;
 
@@ -164,7 +186,7 @@ public class NeedlemanWunsch {
         return new char[][]{ actualAlignA, actualAlignB };
     }
 
-    private static char[][] traceback(Map<String, Integer> scoring_matrix, int[][] scores, char[] s1, char[] s2) {
+    private char[][] traceback(Map<String, Integer> scoring_matrix, int[][] scores, char[] s1, char[] s2) {
         int col = s1.length;
         int row = s2.length;
 
@@ -220,7 +242,7 @@ public class NeedlemanWunsch {
         return new char[][]{ actualAlignA, actualAlignB };
     }
 
-    private static int getScore(char c1, char c2, Map<String, Integer> scoring_matrix) {
+    private int getScore(char c1, char c2, Map<String, Integer> scoring_matrix) {
         // This is the difference between the non-score matrix version and this version
         // Try to get the score
         Integer match_score = scoring_matrix.get("" + c1 + c2);
@@ -247,15 +269,25 @@ public class NeedlemanWunsch {
     }
 
     // Getters and Setters below
-    public static void setMATCH(int new_value) { MATCH = new_value; }
+    public void setMATCH(int new_value) { MATCH = new_value; }
 
-    public static void setMISMATCH(int new_value) { MISMATCH = new_value; }
+    public void setMISMATCH(int new_value) { MISMATCH = new_value; }
 
-    public static void setGAP(int new_value) { GAP = new_value; }
+    public void setGAP(int new_value) { GAP = new_value; }
 
-    public static int getMATCH() { return MATCH; }
+    public int getMATCH() { return MATCH; }
 
-    public static int getMISMATCH() { return MISMATCH; }
+    public int getMISMATCH() { return MISMATCH; }
 
-    public static int getGAP() { return GAP; }
+    public int getGAP() { return GAP; }
+
+    // Sets the scoring matrix to a map provided by the user.
+    public void setScoringMatrix(Map<String, Integer> matrix) {
+        scoringMatrix = matrix;
+    }
+
+    // Loads a scoring matrix from a text file.
+    public void loadScoringMatrix(String path) throws IOException {
+        scoringMatrix = MatrixLoader.load(path);
+    }
 }
