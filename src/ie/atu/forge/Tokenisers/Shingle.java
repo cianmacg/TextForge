@@ -1,27 +1,23 @@
 package ie.atu.forge.Tokenisers;
 
+import java.util.Arrays;
+
 // Word level N-gram tokenisation. For character N-grams, use Ngram.
 public class Shingle {
     public static String[] tokenise(String input, int window) {
         String[] words = input.split("\\s+");
-        String[] tokens = new String[words.length - window + 1];
+
 
         if(words.length <= window) {
-            return tokens;
+            return new String[0];
         }
 
-        int i = 0;
-        while(i <= words.length - window) {
-            StringBuilder sb = new StringBuilder();
+        String[] tokens = new String[words.length - window + 1];
 
-            for(int j = 0; j < (window - 1); j++) {
-                sb.append(words[i+j]);
-                sb.append(" ");
-            }
-            sb.append(words[i+window - 1]);
-            tokens[i] = sb.toString();
-            i++;
+        for (int i = 0; i <= words.length - window; i++) {
+            tokens[i] = String.join(" ", Arrays.copyOfRange(words, i, i + window));
         }
+
         return tokens;
     }
 }
