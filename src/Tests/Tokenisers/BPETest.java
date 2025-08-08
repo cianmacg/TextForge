@@ -6,6 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class BPETest {
 
     private BPE bpe;
@@ -95,6 +100,27 @@ public class BPETest {
 
         assertEquals(text, decoded, "Whitespace must be preserved after round-trip");
     }
+
+    @Test
+    public void testSaveAndLoadVocabHex() throws IOException {
+        String text = "lower slow";
+        int[] originalTokens = bpe.encode(text);
+
+        // Save vocab in Hex format to local workspace
+        bpe.saveVocabToJsonHex();
+
+        // Load vocab into a fresh BPE instance
+        BPE loadedBpe = new BPE();
+        loadedBpe.loadVocabFromJsonHex("bpe_vocab_hex.json");
+
+        int[] loadedTokens = loadedBpe.encode(text);
+        assertArrayEquals(originalTokens, loadedTokens,
+                "Encoding should be identical after saving/loading Hex vocab");
+
+        String decoded = loadedBpe.decode(loadedTokens);
+        assertEquals(text, decoded, "Decoded text should match after Hex vocab load");
+
+        // Cleanup
+        Files.deleteIfExists(Paths.get("bpe_vocab_hex.json"));
+    }
 }
-
-

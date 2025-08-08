@@ -1,6 +1,7 @@
 package ie.atu.forge.Tokenisers;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -57,7 +58,9 @@ public class BPE {
                     break;
                 }
             }
-
+            if(inverseVocab.get(goodSequence) == null) {
+                throw new RuntimeException("Value at key does not exist in inverseVocab.");
+            }
             // Output the best match found
             encoding[tokenCounter++] = inverseVocab.get(goodSequence);
 
@@ -236,8 +239,8 @@ public class BPE {
 
 
     // Saves the current vocabulary map to a JSON file. Path is the location to save the vocabulary. ByteSequences are represented in Hex.
-    public void vocabToJson(String path) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_vocab.json"));
+    public void saveVocabToJsonHex(String path) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_vocab_hex.json"));
 
         writer.write('{');
 
@@ -269,51 +272,52 @@ public class BPE {
         writer.close();
     }
 
-    public void vocabToJson() throws IOException {
-        vocabToJson("");
+    public void saveVocabToJsonHex() throws IOException {
+        saveVocabToJsonHex("");
     }
 
-    // Saves the current vocabulary (Inverse vocab) map to a JSON file. Path is the location to save the vocabulary. ByteSequences are represented in Hex.
-    public void inverseVocabToJson(String path) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_inverse_vocab.json"));
-
+    public void saveVocabToJsonASCII(String path) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_vocab_ascii.json"));
         writer.write('{');
 
         boolean firstToken = true;
         for (Map.Entry<ByteSequence, Integer> mapping : inverseVocab.entrySet()) {
             byte[] bytes = mapping.getKey().bytes();
 
-            // Convert each byte to a two-digit hex string
+            // Convert bytes directly to characters
             StringBuilder sb = new StringBuilder();
             for (byte b : bytes) {
-                sb.append(String.format("%02X ", b));  // uppercase hex, space-separated
+                sb.append((char) (b & 0xFF)); // Use unsigned byte value
             }
 
-            // Remove trailing space
-            if (!sb.isEmpty()) {
-                sb.setLength(sb.length() - 1);
-            }
-
-            if(!firstToken) writer.write(",");
+            if (!firstToken) writer.write(",");
             else firstToken = false;
 
-            // Write as: HEX_BYTES: VALUE
             writer.newLine();
-            writer.write("\t\"" + sb + "\": " + mapping.getValue());
+            writer.write("\t\"" + mapping.getValue() + "\": \"" + escapeJsonString(sb.toString()) + "\"");
         }
 
         writer.newLine();
         writer.write('}');
         writer.close();
     }
-
-    public void inverseVocabToJson() throws IOException {
-        inverseVocabToJson("");
+// Helper method to escape special JSON characters
+    private static String escapeJsonString(String input) {
+        return input.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f");
     }
 
+    public void saveVocabToJsonASCII() throws IOException {
+        saveVocabToJsonASCII("");
+    }
 
     // Loads vocab from Json file. Will also populate inverse_vocab. Vocab has integer: hex. Where hex is the byte representation.
-    public void loadVocabFromJson(String path) throws IOException {
+    public void loadVocabFromJsonHex(String path) throws IOException {
         if(trained) {
             System.out.println("Already trained.");
             return;
@@ -341,6 +345,7 @@ public class BPE {
             inverseVocab = new HashMap<>(inverseVocabulary);
 
             trained = true;
+            reader.close();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
