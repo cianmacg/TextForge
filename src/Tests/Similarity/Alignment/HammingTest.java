@@ -2,7 +2,6 @@ package Tests.Similarity.Alignment;
 
 import ie.atu.forge.Similarity.Alignment.Hamming;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;

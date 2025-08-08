@@ -406,6 +406,7 @@ public class Lovin {
     }
 
     public static String stem(String input) {
+        if(input.length() <= 2) return input;
         // The minimum stem length we can have is 2, so no point in checking any ending with a greater length than input.length - 2.
         // This will help us determine which map begin looking for endings in. The index for an ending length is the ending length - 1.
         int ending_map_index = Math.min(input.length() - MIN_STEM_LENGTH, MAX_ENDING_LENGTH) - 1;
