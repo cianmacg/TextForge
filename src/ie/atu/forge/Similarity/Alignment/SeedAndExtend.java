@@ -6,14 +6,34 @@ import java.util.concurrent.StructuredTaskScope;
 // A record for each seed.
 record Seed (int queryIndex, int subjectIndex) {}
 
-/*
-    A 2 stage local sequence matching algorithm.
-    Begins with a seeding phase where short exact matching sequences are found.
-    Extends these seeds later to enlarge the match beyond the size of a kmer.
-
-    This implementation uses a greedy no-gap extension, and returns the full list of matches, filtering out duplicates.
+/**
+ *     A 2 stage local sequence matching algorithm.
+ *     Begins with a seeding phase where short exact matching sequences are found.
+ *     Extends these seeds later to enlarge the match beyond the size of a kmer.<br><br>
+ *
+ *     This implementation uses a greedy no-gap extension, and returns the full list of matches, filtering out duplicates.
+ *     Alternatively, a Smith-Waterman algorithm can be used for extensions.<br><br>
+ *
+ *     <a href="https://www.sciencedirect.com/science/article/pii/S0022283605803602">Original Paper.</a><br>
+ *
  */
 public class SeedAndExtend {
+    /**
+     * Finds alignments between a subject and a query string. Begins with a seeding phase, where short exact matching sequences are found.
+     * The length of these seeds is controlled by "kmerLength".
+     * Once all possible seeds are found, and extension phase begins.
+     * Seeds are expanded upon, using either a greed no-gap extension algorithm, or a Smith-Waterman algorithm.
+     * If a Smith-Waterman object is passed, it will be used for extension. Additionally, a window size is needed to determine how much of the text surrounding a seed will be used for the Smith-Waterman alignment.
+     *
+     *
+     * @param subject The subject string.
+     * @param query The query string.
+     * @param kmerLength The initial seed size.
+     * @param smithWaterman A SmithWaterman object to use for extension.
+     * @param windowSize The length of text around the seed to be passed to the SmithWaterman object during extension.
+     * @return An array of extensions (alignments) found between the subject and the query.
+     * @throws Exception
+     */
     public static Extension[] align(String subject, String query, int kmerLength, SmithWaterman smithWaterman, int windowSize) throws Exception {   // smithWaterman - controls whether to use Greedy or Smith-Waterman extension. Null = Greedy.
         if(subject == null || subject.isEmpty() || query == null || query.isEmpty() || kmerLength <= 0) return new Extension[0]; // No alignments can be made on empty strings. No seeds can be generated as kmerLength is <= 0.
 

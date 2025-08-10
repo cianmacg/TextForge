@@ -1,9 +1,17 @@
 package ie.atu.forge.Similarity.Alignment;
-
-/*
-    Similarity measure that returns a range (0 - 1). Handles matches and transpositions.
+/**
+ * A similarity measure that returns a range (0 - 1). Hangles matches and transpositions.
+ *
+ * <a href="https://www.jstor.org/stable/2289924">Original Paper.</a>
  */
 public class Jaro {
+    /**
+     * Measures how similar two strings are based on matching characters within a certain distance and the number of transpositions.
+     *
+     * @param s1 The subject string (character array).
+     * @param s2 The query string (character array).
+     * @return The similarity ranging from 0 (completely dissimilar) to 1 (identical).
+     */
     public static double similarity(char[] s1, char[] s2) {
         if (s1.length == 0 && s2.length == 0) return 1.0; // If both are empty, they are a perfect match.
         if (s1.length == 0 || s2.length == 0) return 0.0; // If only 1 is empty, they cannot have any matches.
@@ -50,6 +58,13 @@ public class Jaro {
         return ( (matches / (double) s1.length) +  (matches / (double) s2.length) +  ((matches - transpositions) / (double) matches)) / 3.0d;
     }
 
+    /**
+     * Measures how similar two strings are based on matching characters within a certain distance and the number of transpositions.
+     *
+     * @param s1 The subject string.
+     * @param s2 The query string.
+     * @return The similarity ranging from 0 (completely dissimilar) to 1 (identical).
+     */
     public static double similarity(String s1, String s2) {
         return similarity(s1.toCharArray(), s2.toCharArray());
     }

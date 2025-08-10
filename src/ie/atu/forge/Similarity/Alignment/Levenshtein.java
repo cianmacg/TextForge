@@ -1,15 +1,35 @@
 package ie.atu.forge.Similarity.Alignment;
 
 // I used this for reference: https://www.geeksforgeeks.org/dsa/introduction-to-levenshtein-distance/
+
+/**
+ * Levenshtein distance includes substitutions, insertions and deletions.
+ * Can handle variable string lengths.
+ *
+ * <a href="https://ui.adsabs.harvard.edu/abs/1966SPhD...10..707L/abstract">Original Paper.</a>
+ */
 public class Levenshtein {
-    /*
-     * Levenshtein distance includes substitutions, insertions and deletions.
-     * Can handle variable string lengths.
+
+    /**
+     *  Measures the minimum Edit Distance between 2 Strings. Handles insertions, deletions, and substitutions.
+     *
+     *
+     * @param s1 The subject string
+     * @param s2 The query string
+     * @return The distance between s1 and s2 using Levenshtein Distance.
      */
     public static int distance(String s1, String s2) {
         return distance(s1.toCharArray(), s2.toCharArray());
     }
 
+    /**
+     *  Measures the minimum Edit Distance between 2 Strings. Handles insertions, deletions, and substitutions.
+     *
+     *
+     * @param s1 The subject string (character array)
+     * @param s2 The query string (character array)
+     * @return The distance between s1 and s2 using Levenshtein Distance.
+     */
     /*
      * I'm using the character array representations of the strings here, as there will be many function calls to .charAt otherwise. I am assuming this improves performance.
      * There is another possible implementation which reduces space complexity by only tracking the current and previous rows (since anything else is never really used).

@@ -1,11 +1,30 @@
 package ie.atu.forge.Similarity.Alignment;
 
-// Extension of Levenshtein distance that also measures transpositions. A transposition occurs between adjacent characters.
+/**
+ * Extension of Levenshtein distance that also measures transpositions. A transposition occurs between adjacent characters.
+ *
+ * <a href="https://dl.acm.org/doi/10.1145/363958.363994">Original Paper.</a>
+ */
+
 public class DamerauLevenshtein {
+    /**
+     * Measures the number of Insertions, Deletions, Substitutions, and Transpositions to convert one string to another.
+     *
+     * @param s1 The subject string
+     * @param s2 The query string
+     * @return The distance between s1 and s2 using Damerau-Levenshtein Distance.
+     */
     public static int distance(String s1, String s2) {
         return distance(s1.toCharArray(), s2.toCharArray());
     }
 
+    /**
+     * Measures the number of Insertions, Deletions, Substitutions, and Transpositions to convert one string to another.
+     *
+     * @param s1 The subject string (character array)
+     * @param s2 The query string (character array)
+     * @return The distance between s1 and s2 using Damerau-Levenshtein Distance.
+     */
     public static int distance(char[] s1 , char[] s2) {
         int m = s1.length;
         int n = s2.length;
