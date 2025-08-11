@@ -4,7 +4,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The straight-line distance between 2 points in any dimension. The square root of the sum of squared differences between the coordinates of the points. <br><br>
+ * Applied on strings by converting them to vectors.
+ */
 public class Euclidean {
+    /**
+     * Calculates the straight line distance between 2 vectors.
+     *
+     * @param v1 An integer vector.
+     * @param v2 An integer vector.
+     * @return The distance between the provided vectors using Euclidean distance.
+     */
     public static double distance(int[] v1, int[] v2) {
         if (v1.length != v2.length) return -1;
 
@@ -20,18 +31,24 @@ public class Euclidean {
         return Math.sqrt(result);
     }
 
-
-    public static double distance(Map<String, Integer> s1, Map<String, Integer> s2) {
-        Set<String> vocabulary = new HashSet<>(s1.keySet());
-        vocabulary.addAll(s2.keySet());
+    /**
+     * Calculates the straight line distance between 2 vectors. This function will create count vectors from the provided maps.
+     *
+     * @param m1 A mapping of Strings and their counts.
+     * @param m2 A mapping of Strings and their counts.
+     * @return The distance between the created vectors using Euclidean distance.
+     */
+    public static double distance(Map<String, Integer> m1, Map<String, Integer> m2) {
+        Set<String> vocabulary = new HashSet<>(m1.keySet());
+        vocabulary.addAll(m2.keySet());
 
         int[] v1 = new int[vocabulary.size()], v2 = new int[vocabulary.size()];
 
         int i = 0;
         // Populate the count vectors.
         for(String token: vocabulary) {
-            v1[i] = s1.getOrDefault(token, 0);
-            v2[i] = s2.getOrDefault(token, 0);
+            v1[i] = m1.getOrDefault(token, 0);
+            v2[i] = m2.getOrDefault(token, 0);
             i++;
         }
 

@@ -78,7 +78,7 @@ public class JaccardTest {
         Map<String, Integer> s1 = Map.of("a", 2, "b", 3);
         Map<String, Integer> s2 = Map.of("a", 2, "b", 3);
 
-        double result = Jaccard.generalised_similarity(s1, s2);
+        double result = Jaccard.generalisedSimilarity(s1, s2);
         assertEquals(1.0, result, 1e-9, "Identical maps should have similarity 1.0");
     }
 
@@ -87,7 +87,7 @@ public class JaccardTest {
         Map<String, Integer> s1 = Map.of("a", 2, "b", 1);
         Map<String, Integer> s2 = Map.of("a", 1, "b", 4);
 
-        double result = Jaccard.generalised_similarity(s1, s2);
+        double result = Jaccard.generalisedSimilarity(s1, s2);
         // min counts = a:1, b:1 → 2
         // max counts = a:2, b:4 → 6
         // Similarity = 2 / 6 = 1/3
@@ -99,7 +99,7 @@ public class JaccardTest {
         Map<String, Integer> s1 = Map.of("a", 3);
         Map<String, Integer> s2 = Map.of("b", 5);
 
-        double result = Jaccard.generalised_similarity(s1, s2);
+        double result = Jaccard.generalisedSimilarity(s1, s2);
         assertEquals(0.0, result, 1e-9, "Maps with no shared keys should have similarity 0.0");
     }
 
@@ -108,7 +108,7 @@ public class JaccardTest {
         Map<String, Integer> s1 = Map.of("a", 0, "b", 0);
         Map<String, Integer> s2 = Map.of("a", 0, "b", 0);
 
-        double result = Jaccard.generalised_similarity(s1, s2);
+        double result = Jaccard.generalisedSimilarity(s1, s2);
         assertEquals(1.0, result, 1e-9, "Maps with only zero counts should be treated as identical");
     }
 
@@ -117,7 +117,7 @@ public class JaccardTest {
         Map<String, Integer> s1 = new HashMap<>();
         Map<String, Integer> s2 = Map.of("a", 1);
 
-        double result = Jaccard.generalised_similarity(s1, s2);
+        double result = Jaccard.generalisedSimilarity(s1, s2);
         assertEquals(0.0, result, 1e-9, "Empty map vs non-empty map should yield 0 similarity");
     }
 
@@ -126,7 +126,7 @@ public class JaccardTest {
         Map<String, Integer> s1 = new HashMap<>();
         Map<String, Integer> s2 = new HashMap<>();
 
-        double result = Jaccard.generalised_similarity(s1, s2);
+        double result = Jaccard.generalisedSimilarity(s1, s2);
         assertEquals(1.0, result, 1e-9, "Two empty maps should have similarity 1.0");
     }
 }
