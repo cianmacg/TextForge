@@ -49,7 +49,20 @@ public class SeedAndExtend {
         return extensions;
     }
 
-    // If a SmithWaterman Object is not being passed, this should be used.
+    /**
+     * Finds alignments between a subject and a query string. Begins with a seeding phase, where short exact matching sequences are found.
+     * The length of these seeds is controlled by "kmerLength".
+     * Once all possible seeds are found, and extension phase begins.
+     * Seeds are expanded upon, using either a greed no-gap extension algorithm, or a Smith-Waterman algorithm.
+     * If a Smith-Waterman object is passed, it will be used for extension. Additionally, a window size is needed to determine how much of the text surrounding a seed will be used for the Smith-Waterman alignment.
+     *
+     *
+     * @param subject The subject string.
+     * @param query The query string.
+     * @param kmerLength The initial seed size.
+     * @return An array of extensions (alignments) found between the subject and the query.
+     * @throws Exception
+     */
     public static Extension[] align(String subject, String query, int kmerLength) {
         if(subject == null || subject.isEmpty() || query == null || query.isEmpty() || kmerLength <= 0) return new Extension[0];
 
