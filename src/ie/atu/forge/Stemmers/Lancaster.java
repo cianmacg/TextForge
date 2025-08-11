@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-An implementation of the Lancaster (Paice-Husk) stemmer using the sample rules from the original paper.
-https://dl.acm.org/doi/10.1145/101306.101310
-
-This is an aggressive stemmer, which uses the rules form the paper exactly.
+/**
+ * An implementation of the Lancaster (Paice-Husk) stemmer using the sample rules from the <a href="https://dl.acm.org/doi/10.1145/101306.101310">original paper</a>.
+ *
+ * This is an aggressive stemmer, which uses the rules from the paper exactly.
  */
 public class Lancaster {
     private static final Map<String, String> intact_rules = new HashMap<>();
@@ -145,8 +144,14 @@ public class Lancaster {
         rules.put("zy", "1s.");
     }
 
+    /**
+     * Stems a single word using the Lancaster (Paice-Husk) rules from the original paper.
+     *
+     * @param input The word to be stemmed.
+     * @return The result of applying the stemming rules.
+     */
     public static String stem(String input) {
-        if(input.length()<=0) {
+        if(input.length() <= 0) {
             return input;
         }
         char[] stem = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
@@ -154,6 +159,11 @@ public class Lancaster {
         return new String(find_intact_rule(stem));
     }
 
+    /**
+     * Stems an array of words using the Lancaster (Paice-Husk) rules from the original paper.
+     * @param inputs The words to be stemmed.
+     * @return The results of stemming each word, as a String array (word order is preserved).
+     */
     public static String[] stem(String[] inputs) {
         String[] stems = new String[inputs.length];
 

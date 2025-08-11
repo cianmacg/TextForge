@@ -18,6 +18,10 @@ Check lengths of Stems before trying to apply transformations - Null pointer err
 
 
 // Implementation of Lovin's stemmer based on the original paper.
+
+/**
+ * An implementation of Lovin's stemmer based on the <a href="https://aclanthology.org/www.mt-archive.info/MT-1968-Lovins.pdf">original paper.</a>
+ */
 public class Lovin {
     /*
      In the spirit of Lovin's stemmer (i.e. sacrificing space for performance), I'm using a seperate map for each ending length.
@@ -25,7 +29,7 @@ public class Lovin {
      */
     private static final Map<String, String>[] endings = new HashMap[11];
 
-    // Mapping of values to coresponding condition function to check.
+    // Mapping of values to corresponding condition function to check.
     private static final Map<String, Condition> conditions = Map.ofEntries(
             Map.entry("a", Lovin::condition_a),
             Map.entry("b", Lovin::condition_b),
@@ -405,6 +409,11 @@ public class Lovin {
         boolean test(char[] input);
     }
 
+    /**
+     * Stems a single word based on the rule from the original Lovin's stemmer paper.
+     * @param input The word to be stemmed.
+     * @return The result of applying the stemming rules.
+     */
     public static String stem(String input) {
         if(input.length() <= 2) return input;
         // The minimum stem length we can have is 2, so no point in checking any ending with a greater length than input.length - 2.
@@ -432,6 +441,11 @@ public class Lovin {
         return new String(stem);
     }
 
+    /**
+     * Stems an array of words based on the rules from the original Lovin's stemmer paper.
+     * @param inputs The words to be stemmed.
+     * @return The results of stemming each word, as a String array (word order is preserved).
+     */
     public static String[] stem(String[] inputs) {
         String[] stems = new String[inputs.length];
 

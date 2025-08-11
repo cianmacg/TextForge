@@ -7,6 +7,10 @@ Porter, M.F. (1980), "An algorithm for suffix stripping", Program: electronic li
  */
 
 // Implementation of Porter's stemmer based on the original paper.
+
+/**
+ * Implementation of Porter's stemmer based on the <a href="https://doi.org/10.1108/eb046814">original paper.</a>
+ */
 public class Porter {
     /*
     Porter's stemmer to stem a single word.
@@ -76,6 +80,11 @@ public class Porter {
     }
 
 
+    /**
+     * Stems a single word based on the rules from the original Porter's stemmer paper.
+     * @param input The word to be stemmed.
+     * @return The result of applying the stemming rules to the word.
+     */
     public static String stem(String input) {
         StringBuilder result = new StringBuilder();
         char[] chars = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
@@ -85,6 +94,11 @@ public class Porter {
         return result.toString();
     }
 
+    /**
+     * Stems an array of words based on the rules from the original Porter's stemmer paper.
+     * @param inputs The words to be stemmed.
+     * @return The result of applying the stemming rules to each word, as a String array (word order is preserved).
+     */
     public static String[] stem(String[] inputs) {
         String[] stems = new String[inputs.length];
 
