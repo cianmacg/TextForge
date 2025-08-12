@@ -2,6 +2,11 @@ package ie.atu.forge.Tokenisers;
 
 import java.util.Arrays;
 
+/**
+ * Simply an Object to store an array of Bytes. Used by BPE.java.
+ *
+ * @param bytes Array of bytes.
+ */
 public record ByteSequence(byte[] bytes) {
     @Override
     public boolean equals(Object o) {

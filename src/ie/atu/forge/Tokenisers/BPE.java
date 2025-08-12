@@ -20,6 +20,7 @@ record Pair(int first, int second) {
         return Objects.hash(first, second);
     }}
 
+
 public class BPE {
     private boolean trained = false;
     private Map<Integer, ByteSequence> vocab = new HashMap<>();
@@ -36,6 +37,11 @@ public class BPE {
         }
     }
 
+    /**
+     * Encodes the text using the tokens created during training. If training has not been done, only character level tokens will be returned.
+     * @param text The text to be encoded.
+     * @return An array of integer tokens which represent the provided text.
+     */
     public int[] encode(String text) {
         byte[] byteText = text.getBytes();
         int[] encoding = new int[byteText.length]; // Maximum possible size
@@ -73,6 +79,11 @@ public class BPE {
         return fitted_encoding;
     }
 
+    /**
+     * Decodes the provided tokens into a text string.
+     * @param tokens The tokens to be decoded.
+     * @return The string of text that the provided tokens represent.
+     */
     public String decode(int[] tokens) {
         List<Byte> tokenBytes = new ArrayList<>();
 
@@ -95,6 +106,12 @@ public class BPE {
 
     // Should only ever be called once.
     // Vocabulary size will be the added to the size of the base vocabulary.
+
+    /**
+     * Trains on the provided corpus. Creates {@code vocabSize} number of tokens.
+     * @param corpus The text to train on.
+     * @param vocabSize The number of new tokens to create. This number does not include the 256 tokens created on initialisation.
+     */
     public void train(String corpus, int vocabSize) {
         if(trained) return;
 
@@ -228,16 +245,31 @@ public class BPE {
         return result;
     }
 
+    /**
+     * Simply returns the token vocabulary (Integer -> ByteSequence) as a map.
+     *
+     * @return A map of the token vocabulary.
+     */
     public Map<Integer, ByteSequence> getVocab() {
         return vocab;
     }
 
+    /**
+     * Simply returns the inverse of the token vocabulary (ByteSequence -> Integer) as a map.
+     *
+     * @return A map of the inverse token vocabulary.
+     */
     public Map<ByteSequence, Integer> getInverseVocab() {
         return inverseVocab;
     }
 
-
-    // Saves the current vocabulary map to a JSON file. Path is the location to save the vocabulary. ByteSequences are represented in Hex.
+    /**
+     * Saves the current vocabulary map to a JSON file. ByteSequences are represented in Hex.
+     * If a path is not provided, will save to the current working directory.
+     *
+     * @param path The path to save the file to.
+     * @throws IOException
+     */
     public void saveVocabToJsonHex(String path) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_vocab_hex.json"));
 
@@ -271,10 +303,29 @@ public class BPE {
         writer.close();
     }
 
+    /**
+     * Saves the current vocabulary map to a JSON file. ByteSequences are represented in Hex. <br><br>
+     * If a path is not provided, will save to the current working directory.
+     *
+     * @throws IOException
+     */
     public void saveVocabToJsonHex() throws IOException {
         saveVocabToJsonHex("");
     }
 
+    /**
+     * Saves the current vocabulary map to a JSON file. ByteSequences are represented by ASCII characters.
+     * As there is no loading function for ASCII characters, this should only be used for demonstration.<br><br>
+     * If a path is not provided, will save to the current working directory.<br><br>
+     * Example Output:
+     * <br> { <br>
+     *     &emsp;"224": "E0", <br>
+     * 	   &emsp;"225": "E1" <br>
+     * }
+     *
+     * @param path The path to save the file to.
+     * @throws IOException
+     */
     public void saveVocabToJsonASCII(String path) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path + "bpe_vocab_ascii.json"));
         writer.write('{');
@@ -311,11 +362,31 @@ public class BPE {
                 .replace("\f", "\\f");
     }
 
+    /**
+     * Saves the current vocabulary map to a JSON file. ByteSequences are represented by ASCII characters.
+     * As there is no loading function for ASCII characters, this should only be used for demonstration.<br><br>
+     * If a path is not provided, will save to the current working directory.<br><br>
+     * Example Output:
+     * <br> { <br>
+     *      &emsp;"223": "ß",<br>
+     *      &emsp;"226": "â",<br>
+     * }
+     * @throws IOException
+     */
     public void saveVocabToJsonASCII() throws IOException {
         saveVocabToJsonASCII("");
     }
 
-    // Loads vocab from Json file. Will also populate inverse_vocab. Vocab has integer: hex. Where hex is the byte representation.
+    /**
+     * Loads a vocabulary from a JSON file. The JSON file should be mappings of Integers to Hex values. <br><br>
+     * Example Input: <br> { <br>
+     *     &emsp;"224": "E0", <br>
+     * 	   &emsp;"225": "E1" <br>
+     * }
+     *
+     * @param path The path to the vocabulary file.
+     * @throws IOException
+     */
     public void loadVocabFromJsonHex(String path) throws IOException {
         if(trained) {
             System.out.println("Already trained.");
