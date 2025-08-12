@@ -2,11 +2,23 @@ package ie.atu.forge.Vectorisers;
 
 import java.util.*;
 
+/**
+ * A weighting method that scores words based on how often they appear in a document (TF) and how rare they are across the whole corpus (IDF).<br><br>
+ * Relevant Papers:<br>
+ * <a href="https://www.emerald.com/jd/article-abstract/28/1/11/196227/A-STATISTICAL-INTERPRETATION-OF-TERM-SPECIFICITY?redirectedFrom=fulltext"> A Statistical Interpretation of Term Specificity and Its Application in Retrieval.
+ * Journal of Documentation.</a> <br>
+ * <a href="https://dl.acm.org/doi/10.1145/361219.361220">A vector space model for automatic indexing</a><br>
+ * <a href="https://www.sciencedirect.com/science/article/abs/pii/0306457388900210?via%3Dihub">Term-weighting approaches in automatic text retrieval</a>
+ */
 public class TFIDF {
     private final Map<String, Integer> corpusTermFreq = new HashMap<>(); // Map of words to frequency count across all documents.
     private int documentCount = 0;
 
-    // Add a document to documentFreq
+    /**
+     * Adds a document to the corpus.
+     *
+     * @param doc The document to be added.
+     */
     public void addDocument(String doc) {
         if(doc == null || doc.isEmpty()) return; // If the document is null or has no length, don't do anything.
         documentCount++;
@@ -16,6 +28,12 @@ public class TFIDF {
     }
 
     // Add a group of documents to documentFreq.
+
+    /**
+     * Adds a group of documents to the corpus.
+     *
+     * @param docs The documents to be added.
+     */
     public void addDocuments(String[] docs) {
         if(docs == null || docs.length == 0) return;
 
@@ -28,6 +46,13 @@ public class TFIDF {
         }
     }
 
+    /**
+     * Scores every term in the provided document. If the document does not already exist in the corpus, newDocument should be set to true. This will add the document to the corpus before scoring the document.
+     *
+     * @param doc The document to be scored.
+     * @param newDocument If the document doesn't exist in the corpus already.
+     * @return A mapping of each term to its score.
+     */
     public Map<String, Double> scoreDocument(String doc, boolean newDocument) { // A new document is on which has not been added to the 'documentFreq', and needs to be added first.
         if(doc == null || doc.isEmpty() || (documentCount == 0 && !newDocument)) return new HashMap<>(); // Attemping to add an empty or null document, or trying to score while there are no documents added, return an empty HashMap.
         String[] terms = docToTerms(doc);
@@ -63,7 +88,14 @@ public class TFIDF {
         return termScores;
     }
 
-    // Creates a vector based on every term in every document.
+    /**
+     * Creates a vector from a document. If the document does not already exist in the corpus, newDocument should be set to true. This will add the document to the corpus before scoring the document.
+     * <br><br>
+     * A vector will contain values for every term in the corpus. If the term appears in the corpus but not the document, it will have a score of 0. If the term appears in the document, its TF-IDF score will be calculated.
+     * @param doc The document to be vectorised.
+     * @param newDocument If the document doesn't exist in the corpus already.
+     * @return A vector representing the provided document.
+     */
     public double[] vectoriseDocument(String doc, boolean newDocument) {
         if(doc == null || doc.isEmpty() || (documentCount == 0 && !newDocument)) return new double[0]; // Attemping to add an empty or null document, or trying to score while there are no documents added, return an empty array.
         String[] terms = docToTerms(doc);
@@ -80,7 +112,7 @@ public class TFIDF {
 
         if(newDocument) {
             documentCount++;
-            addTermsToDocumentFrequency(addedTerms);    // Add terms to overall document frequency (if it hasn't previously been added.
+            addTermsToDocumentFrequency(addedTerms);    // Add terms to overall document frequency (if it hasn't previously been added). Terms should only be incremented once per document (i.e. even if a word appears many times in the document, it should only increase the corpus count by 1).
         }
 
         double[] vector = new double[corpusTermFreq.size()];
@@ -120,7 +152,21 @@ public class TFIDF {
         return splits;
     }
 
+    /**
+     * Gets the frequency of a term in the corpus.
+     *
+     * @return The term frequency in the corpus.
+     */
     public Map<String, Integer> getCorpusTermFreq() {
         return new HashMap<>(corpusTermFreq);
+    }
+
+    /**
+     * Gets the total number of documents that have been added to the corpus.
+     *
+     * @return The document count in the corpus.
+     */
+    public int getDocumentCount() {
+        return documentCount;
     }
 }
