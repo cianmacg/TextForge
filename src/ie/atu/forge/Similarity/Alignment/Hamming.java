@@ -2,7 +2,7 @@ package ie.atu.forge.Similarity.Alignment;
 
 /**
  *  Hamming distance is the number of substitutions needed to transform one string to another.
- *  Strings must be of identical lengths.
+ *  Strings must be of identical lengths.<br><br>
  *
  *  <a href="https://ieeexplore.ieee.org/document/6772729/">Original Paper.</a>
  */
@@ -29,7 +29,7 @@ public class Hamming {
      */
     public static int distance(char[] s1, char[] s2) {
         // Strings must be of equal length.
-        if(s1.length != s2.length) return -1;
+        if(s1.length != s2.length) throw new IllegalArgumentException("Both strings must be of equal length.");
 
 
         int dist = 0;
