@@ -15,6 +15,8 @@ public class DamerauLevenshtein {
      * @return The distance between s1 and s2 using Damerau-Levenshtein Distance.
      */
     public static int distance(String s1, String s2) {
+        if(s1 == null || s2 == null) throw new IllegalArgumentException("At least one of the provided strings is null.");
+
         return distance(s1.toCharArray(), s2.toCharArray());
     }
 
@@ -28,9 +30,6 @@ public class DamerauLevenshtein {
     public static int distance(char[] s1 , char[] s2) {
         int m = s1.length;
         int n = s2.length;
-
-        // If either string is null, return -1, as no distance can be calculated.
-        if(s1 == null || s2 == null) return -1;
 
         // If either string is empty, return the length of the other string.
         if(m == 0) return n;
