@@ -62,8 +62,7 @@ public class NeedlemanWunsch {
         if(!useScoringMatrix) return alignWithoutMatrix(s1, s2);
         else {
             if(scoringMatrix == null) {
-                System.out.println("Tried to use Scoring Matrix, but it is null. Defaulting to non-matrix alignment.");
-                return alignWithoutMatrix(s1, s2);
+                throw new IllegalStateException("useScoringMatrix was set to true, but no scoring matrix has been set.");
             }
 
             return alignWithMatrix(s1, s2);
@@ -84,8 +83,7 @@ public class NeedlemanWunsch {
         if(!useScoringMatrix) return alignWithoutMatrix(s1, s2);
         else {
             if(scoringMatrix == null) {
-                System.out.println("Tried to use Scoring Matrix, but it is null. Defaulting to non-matrix alignment.");
-                return alignWithoutMatrix(s1, s2);
+                throw new IllegalStateException("useScoringMatrix was set to true, but no scoring matrix has been set.");
             }
 
             return alignWithMatrix(s1, s2);
@@ -105,7 +103,7 @@ public class NeedlemanWunsch {
 
         int[][] scores = new int[col+1][row+1];
 
-        // First, we need to fill in the rows and columns with cap penalties.
+        // First, we need to fill in the rows and columns with gap penalties.
         for(int i = 0; i <= col; i++) {
             scores[i][0] = i * GAP;
         }
@@ -326,13 +324,13 @@ public class NeedlemanWunsch {
     public void setMATCH(int newValue) { MATCH = newValue; }
 
     /**
-     * Sets the Mismatch score.
+     * Sets the Mismatch score. Mismatch scores should be negative.
      * @param newValue The new score for mismatches.
      */
     public void setMISMATCH(int newValue) { MISMATCH = newValue; }
 
     /**
-     * Sets the Gap score.
+     * Sets the Gap score. Gap scores should be negative.
      * @param newValue The new score for gaps.
      */
     public void setGAP(int newValue) { GAP = newValue; }
