@@ -15,9 +15,9 @@ import java.util.Map;
  * Scoring Matrices can be found <a href="https://ftp.ncbi.nih.gov/blast/matrices/">here</a>.
  */
 public class SmithWaterman {
-    private int MATCH = 2;
+    private int MATCH = 1;
     private int MISMATCH = -1;
-    private int GAP = -2;
+    private int GAP = -1;
     private Map<String, Integer> scoringMatrix = null;
 
     /**

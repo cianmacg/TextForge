@@ -24,7 +24,7 @@ public class SeedAndExtend {
      * Once all possible seeds are found, and extension phase begins.
      * Seeds are expanded upon, using either a greedy no-gap extension algorithm, or a Smith-Waterman algorithm.
      * If a Smith-Waterman object is passed, it will be used for extension. Additionally, a window size is needed to determine how much of the text surrounding a seed will be used for the Smith-Waterman alignment.
-     *
+     * When using a Smith-Waterman object, it is possible that the starting points for the subject and query are not accurate.
      *
      * @param subject The subject string.
      * @param query The query string.
@@ -55,6 +55,7 @@ public class SeedAndExtend {
      * Once all possible seeds are found, and extension phase begins.
      * Seeds are expanded upon, using either a greed no-gap extension algorithm, or a Smith-Waterman algorithm.
      * If a Smith-Waterman object is passed, it will be used for extension. Additionally, a window size is needed to determine how much of the text surrounding a seed will be used for the Smith-Waterman alignment.
+     * When using a Smith-Waterman object, it is possible that the starting points for the subject and query are not accurate.
      *
      *
      * @param subject The subject string.
