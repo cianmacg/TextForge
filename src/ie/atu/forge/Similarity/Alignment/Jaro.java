@@ -69,5 +69,11 @@ public class Jaro {
         return similarity(s1.toCharArray(), s2.toCharArray());
     }
 
+    public static double distance(char[] s1, char[] s2) {
+        return 1 - similarity(s1, s2);
+    }
 
+    public static double distance(String s1, String s2) {
+        return 1 - similarity(s1, s2);
+    }
 }

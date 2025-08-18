@@ -13,8 +13,8 @@ public class JaroWinkler {
      *
      * @param s1 The subject string (character array).
      * @param s2 The query string (character array).
-     * @param p The scaling factor for shared prefixes.
-     * @return The similarity ranging from 0 (completely dissimilar) to 1 (Identical)
+     * @param p The scaling factor for shared prefixes (It is recommended to keep this value <= 0.25).
+     * @return The similarity ranging from 0 (completely dissimilar) to 1 (Identical).
      */
     public static double similarity(char[] s1, char[] s2, double p) {
         if(s1.length == 0 && s2.length == 0) return 1.0d;
@@ -51,7 +51,7 @@ public class JaroWinkler {
      *
      * @param s1 The subject string.
      * @param s2 The query string.
-     * @param p The scaling factor for shared prefixes (0 - 1.0).
+     * @param p The scaling factor for shared prefixes (It is recommended to keep this value <= 0.25).
      * @return The similarity ranging from 0 (completely dissimilar) to 1 (Identical)
      */
     public static double similarity(String s1, String s2, double p) {
@@ -70,4 +70,16 @@ public class JaroWinkler {
         return similarity(s1.toCharArray(), s2.toCharArray(), 0.1);
     }
 
+    public static double distance(char[] s1, char[] s2, double p) {
+        return 1 - similarity(s1, s2, p);
+    }
+    public static double distance(char[] s1, char[] s2) {
+        return 1 - similarity(s1, s2);
+    }
+    public static double distance(String s1, String s2, double p) {
+        return 1 - similarity(s1.toCharArray(), s2.toCharArray(), p);
+    }
+    public static double distance(String s1, String s2) {
+        return 1 - similarity(s1.toCharArray(), s2.toCharArray());
+    }
 }
