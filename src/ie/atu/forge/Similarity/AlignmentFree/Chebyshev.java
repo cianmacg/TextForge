@@ -31,6 +31,28 @@ public class Chebyshev {
     }
 
     /**
+     * Calculates the Chebyshev distance between 2 vectors.
+     *
+     * @param v1 A double vector.
+     * @param v2 A double vector.
+     * @return The Chebyshev distance between both vectors.
+     */
+    public static double distance(double[] v1, double[] v2) {
+        if (v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
+
+        double result = 0.0d;
+
+        for (int i = 0; i < v1.length; i++) {
+            double difference = Math.abs(v1[i] - v2[i]);
+
+            // Only if the difference is greater than the current maximum do we care about it.
+            if(difference > result) result = difference;
+        }
+
+        return result;
+    }
+
+    /**
      * Calculates the Chebyshev distance between 2 vectors. This function creates count vectors from the provided maps.
      *
      * @param m1 A mapping of Strings to their counts.

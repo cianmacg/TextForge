@@ -23,10 +23,36 @@ public class Cosine {
         double dotProd = 0.0d, mag1 = 0.0d, mag2 = 0.0d;
 
         // Vectors need to be the same length.
-        if(v1.length != v2.length) return -1.0d;
+        if(v1.length != v2.length) throw new IllegalArgumentException("Both vectors must be of equal length.");
 
         for(int i = 0; i < v1.length; i++) {
             int d1 = v1[i], d2 = v2[i];
+
+            dotProd += d1 * d2;
+            mag1 += d1 * d1;
+            mag2 += d2 * d2;
+        }
+
+        return dotProd / Math.sqrt(mag1 * mag2);
+    }
+
+    /**
+     * Calculates the cosine similarity between 2 vectors.
+     *
+     * @param v1 A subject double vector.
+     * @param v2 A query double vector.
+     * @return The cosine similarity between the 2 vectors (from 0.0 to 1.0).
+     */
+    public static double similarity(double[] v1, double[] v2) {
+        if(v1.length == 0 || v2.length == 0) return 0.0d;
+
+        double dotProd = 0.0d, mag1 = 0.0d, mag2 = 0.0d;
+
+        // Vectors need to be the same length.
+        if(v1.length != v2.length) throw new IllegalArgumentException("Both vectors must be of equal length.");
+
+        for(int i = 0; i < v1.length; i++) {
+            double d1 = v1[i], d2 = v2[i];
 
             dotProd += d1 * d2;
             mag1 += d1 * d1;
@@ -71,6 +97,17 @@ public class Cosine {
      * @return The cosine distance between the 2 vectors (from 0.0 to 1.0).
      */
     public static double distance(int[] v1, int[] v2) {
+        return 1 - similarity(v1, v2);
+    }
+
+    /**
+     * The cosine distance between 2 vectors is simply 1 - their similarity.
+     *
+     * @param v1 A subject double vector.
+     * @param v2 A query double vector.
+     * @return The cosine distance between the 2 vectors (from 0.0 to 1.0).
+     */
+    public static double distance(double[] v1, double[] v2) {
         return 1 - similarity(v1, v2);
     }
 

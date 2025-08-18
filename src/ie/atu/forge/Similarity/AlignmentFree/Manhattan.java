@@ -28,6 +28,25 @@ public class Manhattan {
     }
 
     /**
+     * Calculates the Manhattan distance between 2 vectors. Both vectors must be of the same length.
+     *
+     * @param v1 A double vector.
+     * @param v2 A double vector.
+     * @return The Manhattan distance between both vectors.
+     */
+    public static double distance(double[] v1, double[] v2) {
+        if(v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
+
+        double result = 0;
+
+        for(int i = 0; i < v1.length; i++) {
+            result += Math.abs(v1[i] - v2[i]);
+        }
+
+        return result;
+    }
+
+    /**
      * Calculates the Manhattan distance between 2 vectors. This function will create count vectors from the provided maps.
      *
      * @param m1 A mapping of Strings to their counts.

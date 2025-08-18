@@ -33,6 +33,28 @@ public class Canberra {
         return result;
     }
 
+    /**
+     * Calculates the Canberra distance between 2 vectors. Vectors must be of equal length.
+     *
+     * @param v1 A double vector.
+     * @param v2 A double vector.
+     * @return The Canberra distance between both vectors.
+     */
+    public static double distance(double[] v1, double[] v2) {
+        if (v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
+
+        double result = 0.0d;
+
+        for (int i = 0; i < v1.length; i++) {
+            double d1 = v1[i];
+            double d2 = v2[i];
+
+            result += Math.abs(d1 - d2) / (Math.abs(d1) + Math.abs(d2));
+        }
+
+        return result;
+    }
+
 
     /**
      * Calculates the Canberra distance between 2 vectors. This function will create count vectors from the provided maps.

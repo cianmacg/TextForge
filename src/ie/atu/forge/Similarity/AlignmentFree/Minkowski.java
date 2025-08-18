@@ -46,6 +46,44 @@ public class Minkowski {
 
         return result;
     }
+
+    /**
+     * Calculates the Minkowski distance between 2 vectors. <br><br>
+     * Special cases:<br>
+     * p = 1: Manhattan Distance.<br>
+     * p = 2: Euclidean Distance.<br>
+     * p = ∞: Chebyshev Distance (Achieved in this case by setting p = -1).
+     *
+     * @param v1 A double vector.
+     * @param v2 A double vector.
+     * @param p Controls the degree of emphasis on larger versus smaller coordinate differences (large p-value increases the importance of the largest coordinates).
+     * @return The Minkowski distance between both vectors.
+     */
+    public static double distance(double[] v1, double[] v2, double p) {
+        if(v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
+
+        // A p value of 0 will cause a division by 0 error.
+        if(p == 0.0d) {
+            throw new IllegalArgumentException("P cannot be 0. Leads to division by 0 error.");
+        }
+
+        // If p is infinity, the similarity becomes Chebyshev. Since it is not possible to pass infinity, -1 will represent it.
+        if(p == -1.0d) {
+            return Chebyshev.distance(v1, v2);
+        }
+
+        double result = 0.0d;
+
+        for(int i = 0; i < v1.length; i++) {
+            result += Math.pow(Math.abs(v1[i] - v2[i]), p);
+        }
+
+        result = Math.pow(result, 1/p);
+
+        return result;
+    }
+
+
     /**
      * Calculates the Minkowski distance between 2 vectors. This function will create count vectors from the provided maps. <br><br>
      * Special cases:<br>

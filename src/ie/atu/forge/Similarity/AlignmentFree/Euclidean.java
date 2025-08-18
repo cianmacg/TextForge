@@ -32,6 +32,28 @@ public class Euclidean {
     }
 
     /**
+     * Calculates the straight line distance between 2 vectors.
+     *
+     * @param v1  double vector.
+     * @param v2 A double vector.
+     * @return The distance between the provided vectors using Euclidean distance.
+     */
+    public static double distance(double[] v1, double[] v2) {
+        if (v1.length != v2.length) return -1;
+
+        double result = 0.0d;
+
+        for (int i = 0; i < v1.length; i++) {
+            double d1 = v1[i];
+            double d2 = v2[i];
+
+            result += (d1 - d2) * (d1 - d2);
+        }
+
+        return Math.sqrt(result);
+    }
+
+    /**
      * Calculates the straight line distance between 2 vectors. This function will create count vectors from the provided maps.
      *
      * @param m1 A mapping of Strings and their counts.
