@@ -17,7 +17,7 @@ public class Euclidean {
      * @return The distance between the provided vectors using Euclidean distance.
      */
     public static double distance(int[] v1, int[] v2) {
-        if (v1.length != v2.length) return -1;
+        if (v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
 
         double result = 0.0d;
 
@@ -39,7 +39,7 @@ public class Euclidean {
      * @return The distance between the provided vectors using Euclidean distance.
      */
     public static double distance(double[] v1, double[] v2) {
-        if (v1.length != v2.length) return -1;
+        if (v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
 
         double result = 0.0d;
 

@@ -23,7 +23,7 @@ public class Cosine {
         double dotProd = 0.0d, mag1 = 0.0d, mag2 = 0.0d;
 
         // Vectors need to be the same length.
-        if(v1.length != v2.length) throw new IllegalArgumentException("Both vectors must be of equal length.");
+        if(v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
 
         for(int i = 0; i < v1.length; i++) {
             int d1 = v1[i], d2 = v2[i];
@@ -49,7 +49,7 @@ public class Cosine {
         double dotProd = 0.0d, mag1 = 0.0d, mag2 = 0.0d;
 
         // Vectors need to be the same length.
-        if(v1.length != v2.length) throw new IllegalArgumentException("Both vectors must be of equal length.");
+        if(v1.length != v2.length) throw new IllegalArgumentException("Vectors must be the same length: v1.length = " + v1.length + "; v2.length = " + v2.length);
 
         for(int i = 0; i < v1.length; i++) {
             double d1 = v1[i], d2 = v2[i];
