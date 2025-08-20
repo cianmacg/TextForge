@@ -11,18 +11,13 @@ http://snowball.tartarus.org/algorithms/lovins/stemmer.html
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-TODO:
-Check lengths of Stems before trying to apply transformations - Null pointer errors.
- */
-
 
 // Implementation of Lovin's stemmer based on the original paper.
 
 /**
  * An implementation of Lovin's stemmer based on the <a href="https://aclanthology.org/www.mt-archive.info/MT-1968-Lovins.pdf">original paper.</a>
  */
-public class Lovin {
+public class Lovins {
     /*
      In the spirit of Lovin's stemmer (i.e. sacrificing space for performance), I'm using a seperate map for each ending length.
      Index 0 will contain a map for endings of length 1. Ending length will increase and index increases, until ending length 11 (index 10).
@@ -31,35 +26,35 @@ public class Lovin {
 
     // Mapping of values to corresponding condition function to check.
     private static final Map<String, Condition> conditions = Map.ofEntries(
-            Map.entry("a", Lovin::condition_a),
-            Map.entry("b", Lovin::condition_b),
-            Map.entry("c", Lovin::condition_c),
-            Map.entry("d", Lovin::condition_d),
-            Map.entry("e", Lovin::condition_e),
-            Map.entry("f", Lovin::condition_f),
-            Map.entry("g", Lovin::condition_g),
-            Map.entry("h", Lovin::condition_h),
-            Map.entry("i", Lovin::condition_i),
-            Map.entry("j", Lovin::condition_j),
-            Map.entry("k", Lovin::condition_k),
-            Map.entry("l", Lovin::condition_l),
-            Map.entry("m", Lovin::condition_m),
-            Map.entry("n", Lovin::condition_n),
-            Map.entry("o", Lovin::condition_o),
-            Map.entry("p", Lovin::condition_p),
-            Map.entry("q", Lovin::condition_q),
-            Map.entry("r", Lovin::condition_r),
-            Map.entry("s", Lovin::condition_s),
-            Map.entry("t", Lovin::condition_t),
-            Map.entry("u", Lovin::condition_u),
-            Map.entry("v", Lovin::condition_v),
-            Map.entry("w", Lovin::condition_w),
-            Map.entry("x", Lovin::condition_x),
-            Map.entry("y", Lovin::condition_y),
-            Map.entry("z", Lovin::condition_z),
-            Map.entry("aa", Lovin::condition_aa),
-            Map.entry("bb", Lovin::condition_bb),
-            Map.entry("cc", Lovin::condition_cc)
+            Map.entry("a", Lovins::conditionA),
+            Map.entry("b", Lovins::conditionB),
+            Map.entry("c", Lovins::conditionC),
+            Map.entry("d", Lovins::conditionD),
+            Map.entry("e", Lovins::conditionE),
+            Map.entry("f", Lovins::conditionF),
+            Map.entry("g", Lovins::conditionG),
+            Map.entry("h", Lovins::conditionH),
+            Map.entry("i", Lovins::conditionI),
+            Map.entry("j", Lovins::conditionJ),
+            Map.entry("k", Lovins::conditionK),
+            Map.entry("l", Lovins::conditionL),
+            Map.entry("m", Lovins::conditionM),
+            Map.entry("n", Lovins::conditionN),
+            Map.entry("o", Lovins::conditionO),
+            Map.entry("p", Lovins::conditionP),
+            Map.entry("q", Lovins::conditionQ),
+            Map.entry("r", Lovins::conditionR),
+            Map.entry("s", Lovins::conditionS),
+            Map.entry("t", Lovins::conditionT),
+            Map.entry("u", Lovins::conditionU),
+            Map.entry("v", Lovins::conditionV),
+            Map.entry("w", Lovins::conditionW),
+            Map.entry("x", Lovins::conditionX),
+            Map.entry("y", Lovins::conditionY),
+            Map.entry("z", Lovins::conditionZ),
+            Map.entry("aa", Lovins::conditionAa),
+            Map.entry("bb", Lovins::conditionBb),
+            Map.entry("cc", Lovins::conditionCc)
     );
 
     private static final int MAX_ENDING_LENGTH = 11;
@@ -418,22 +413,23 @@ public class Lovin {
         if(input.length() <= 2) return input;
         // The minimum stem length we can have is 2, so no point in checking any ending with a greater length than input.length - 2.
         // This will help us determine which map begin looking for endings in. The index for an ending length is the ending length - 1.
-        int ending_map_index = Math.min(input.length() - MIN_STEM_LENGTH, MAX_ENDING_LENGTH) - 1;
-        char[] stem = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
+        int endingMapIndex = Math.min(input.length() - MIN_STEM_LENGTH, MAX_ENDING_LENGTH) - 1;
+        input = input.replaceAll("[^a-zA-Z ]", "").toLowerCase();
+        char[] stem = input.toCharArray();
 
-        while(ending_map_index >= 0) {
-            String temp = input.substring(input.length() - (ending_map_index + 1));
-            String rule = endings[ending_map_index].get(temp);
+        while(endingMapIndex >= 0) {
+            String temp = input.substring(input.length() - (endingMapIndex + 1));
+            String rule = endings[endingMapIndex].get(temp);
 
             if(rule != null) {
-                char[] stem_candidate = input.substring(0,input.length() - ending_map_index - 1).toCharArray();
+                char[] stem_candidate = input.substring(0,input.length() - endingMapIndex - 1).toCharArray();
 
                 if(conditions.get(rule).test(stem_candidate)) {
                     stem = stem_candidate;
                     break;
                 }
             }
-            ending_map_index--;
+            endingMapIndex--;
         }
 
         stem = transform(stem);
@@ -458,64 +454,64 @@ public class Lovin {
 
     // Conditions stem must pass to remove ending:
     // No restrictions on stem
-    private static boolean condition_a(char[] input) {
+    private static boolean conditionA(char[] input) {
         return true;
     }
 
     // Minimum stem length == 3
-    private static boolean condition_b(char[] input) {
+    private static boolean conditionB(char[] input) {
         return input.length >= 3;
     }
 
     // Minimum stem length == 4
-    private static boolean condition_c(char[] input) {
+    private static boolean conditionC(char[] input) {
         return input.length >= 4;
     }
 
     // Minimum stem length == 5
-    private static boolean condition_d(char[] input) {
+    private static boolean conditionD(char[] input) {
         return input.length >= 5;
     }
 
     // Do not remove ending after 'e'
-    private static boolean condition_e(char[] input) {
+    private static boolean conditionE(char[] input) {
         return !(input[input.length - 1] == 'e');
     }
 
     // Minimum stem length == 3 and do not remove ending after 'e'
-    private static boolean condition_f(char[] input) {
+    private static boolean conditionF(char[] input) {
         return input.length >= 3 && !(input[input.length - 1] == 'e');
     }
 
     // Minimum stem length == 3 and remove ending only after 'f'
-    private static boolean condition_g(char[] input) {
+    private static boolean conditionG(char[] input) {
         return input.length >= 3 && (input[input.length - 1] == 'f');
     }
 
     // Its difficult to tell what the first letter is from the original paper. Online sources say 't' and 'll'.
     // Remove stem ending only after 't' or 'll'
-    private static boolean condition_h(char[] input) {
+    private static boolean conditionH(char[] input) {
         return (input[input.length - 1] == 't') || (input[input.length - 1] == 'l' && (input[input.length - 2] == 'l'));
     }
 
     // Do not remove ending after 'o' or 'e'.
-    private static boolean condition_i(char[] input) {
+    private static boolean conditionI(char[] input) {
         return !(input[input.length - 1] == 'o' || input[input.length - 1] == 'e');
     }
 
     // Do not remove ending after 'a' or 'e'.
-    private static boolean condition_j(char[] input) {
+    private static boolean conditionJ(char[] input) {
         return !(input[input.length - 1] == 'a' || input[input.length - 1] == 'e');
     }
 
 
     // Minimum stem length == 3 and remove ending only after 'l', 'i', or 'uαe' (where 'α' is any letter).
-    private static boolean condition_k(char[] input) {
+    private static boolean conditionK(char[] input) {
         return input.length >= 3 && ((input[input.length - 3] == 'u' && input[input.length - 1] == 'e') || input[input.length - 1] == 'l' || input[input.length - 1] == 'i');
     }
 
     // Do not remove ending after 'u', 'x', or 's', unless 's' follows 'o'.
-    private static boolean condition_l(char[] input) {
+    private static boolean conditionL(char[] input) {
         if(input[input.length - 1] == 'u' || input[input.length - 1] == 'x') {
             return false;
         } else if(input[input.length - 1] == 's' && !(input[input.length - 2] == 'o')) {
@@ -526,12 +522,12 @@ public class Lovin {
     }
 
     // Do not remove ending after 'a', 'c', 'e', or 'm'.
-    private static boolean condition_m(char[] input) {
+    private static boolean conditionM(char[] input) {
         return !(input[input.length - 1] == 'a' || input[input.length - 1] == 'c' || input[input.length - 1] == 'e' || input[input.length - 1] == 'm');
     }
 
     // Minimum stem length == 4 after 'sαα', elsewhere minimum stem length == 3. (where 'α' is any letter)
-    private static boolean condition_n(char[] input) {
+    private static boolean conditionN(char[] input) {
         if(input[input.length - 3] == 's') {
             return input.length >= 4;
         } else {
@@ -540,68 +536,68 @@ public class Lovin {
     }
 
     // Remove ending only after 'l' or 'i'.
-    private static boolean condition_o(char[] input) {
+    private static boolean conditionO(char[] input) {
         return input[input.length - 1] == 'l' || input[input.length - 1] == 'i';
     }
 
     // Do not remove ending after 'c'.
-    private static boolean condition_p(char[] input) {
+    private static boolean conditionP(char[] input) {
         return !(input[input.length - 1] == 'c');
     }
 
     // Minimum stem length == 3 and do not remove ending after 'l' or 'n'.
-    private static boolean condition_q(char[] input) {
+    private static boolean conditionQ(char[] input) {
         return input.length >= 3 && !(input[input.length - 1] == 'l' || input[input.length - 1] == 'n');
     }
 
     // Remove ending only after 'n' or 'r'.
-    private static boolean condition_r(char[] input) {
+    private static boolean conditionR(char[] input) {
         return input[input.length - 1] == 'n' || input[input.length - 1] == 'r';
     }
 
     // Remove ending only after 'dr' or 't', unless 't' follows 't'.
-    private static boolean condition_s(char[] input) {
+    private static boolean conditionS(char[] input) {
         return (input[input.length - 2] == 'd' && input[input.length - 1] == 'r') || (input[input.length - 1] == 't' && !(input[input.length - 2] == 't'));
     }
 
     // Remove ending only after 's' or 't', unless 't' follows 'o'.
-    private static boolean condition_t(char[] input) {
+    private static boolean conditionT(char[] input) {
         return input[input.length - 1] == 's' || (input[input.length - 1] == 't' && !(input[input.length - 2] == 'o'));
     }
 
     // Remove ending only after 'l', 'm', 'n', or 'r'.
-    private static boolean condition_u(char[] input) {
+    private static boolean conditionU(char[] input) {
         return input[input.length - 1] == 'l' || input[input.length - 1] == 'm' || input[input.length - 1] == 'n' || input[input.length - 1] == 'r';
     }
 
     // Remove ending only after 'c'.
-    private static boolean condition_v(char[] input) {
+    private static boolean conditionV(char[] input) {
         return input[input.length - 1] == 'c';
     }
 
     // Do not remove ending after 's' or 'u'.
-    private static boolean condition_w(char[] input) {
+    private static boolean conditionW(char[] input) {
         return !(input[input.length - 1] == 's' || input[input.length - 1] == 'u');
     }
 
     // Remove ending only after 'l', 'i', or 'uαe' (where 'α' is any letter).
-    private static boolean condition_x(char[] input) {
+    private static boolean conditionX(char[] input) {
         return input[input.length - 1] == 'l' || input[input.length - 1] == 'i' || (input[input.length - 3] == 'u' && input[input.length - 1] == 'e');
     }
 
     // Remove ending only after 'in'.
-    private static boolean condition_y(char[] input) {
+    private static boolean conditionY(char[] input) {
         return input[input.length - 2] == 'i' && input[input.length - 1] == 'n';
     }
 
     // Do not remove ending after 'f'.
-    private static boolean condition_z(char[] input) {
+    private static boolean conditionZ(char[] input) {
         return !(input[input.length - 1] == 'f');
     }
 
     // For readability, I wrote this one a little differently.
     // Remove ending only after 'd', 'f', 'ph', 'th', 'l', 'er', 'or', 'es', or 't'.
-    private static boolean condition_aa(char[] input) {
+    private static boolean conditionAa(char[] input) {
         if(input[input.length - 1] == 'd') return true;
         else if (input[input.length - 1] == 'f') return true;
         else if (input[input.length - 2] == 'p' && input[input.length - 1] == 'h') return true;
@@ -616,7 +612,7 @@ public class Lovin {
 
     // Again, written differently for readability.
     // Minimum stem length == 3 and do not remove ending after 'met', or 'ryst'.
-    private static boolean condition_bb(char[] input) {
+    private static boolean conditionBb(char[] input) {
         if(input.length >= 3) {
             if(!(input[input.length - 1] == 't')) {
                 return true;
@@ -630,7 +626,7 @@ public class Lovin {
     }
 
     // Remove ending only after 'l'.
-    private static boolean condition_cc(char[] input) {
+    private static boolean conditionCc(char[] input) {
         return input[input.length - 1] == 'l';
     }
 
@@ -641,16 +637,16 @@ public class Lovin {
      Probably better to put each ending into a map and search that way.
      */
     private static char[] transform(char[] input) {
-        int stem_length = input.length;
+        int stemLength = input.length;
 
         // The minimum transformation size is the final 2 characters of an input, thus the input must be atleast this size.
-        if(stem_length >= 2) {
+        if(stemLength >= 2) {
             // Remove one of double b, d, g, l, m, n, p, r, s, t
-            if(input[stem_length - 1] == input[stem_length - 2]) {
+            if(input[stemLength - 1] == input[stemLength - 2]) {
                 char[] values = {'b', 'd', 'g', 'l', 'm', 'n', 'p', 'r', 's', 't'};
                 for(char value : values) {
-                    if(input[stem_length - 1] == value) {
-                        char[] result = new char[stem_length - 1];
+                    if(input[stemLength - 1] == value) {
+                        char[] result = new char[stemLength - 1];
                         System.arraycopy(input, 0, result, 0, result.length);
                         return result;
                     }
@@ -658,19 +654,19 @@ public class Lovin {
             }
 
 
-            if(input[stem_length - 1] == 'v') {
+            if(input[stemLength - 1] == 'v') {
                 // iev -> ief
-                if(stem_length >= 3) {
-                    if(input[stem_length - 3] == 'i' && input[stem_length - 2] == 'e') {
-                        char[] result = new char[stem_length];
+                if(stemLength >= 3) {
+                    if(input[stemLength - 3] == 'i' && input[stemLength - 2] == 'e') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 'f';
                         return result;
                     }
                     // olv -> olut
-                    else if(input[stem_length - 3] == 'o' && input[stem_length - 2] == 'l') {
-                        char[] result = new char[stem_length + 1];
-                        System.arraycopy(input, 0, result, 0, stem_length);
+                    else if(input[stemLength - 3] == 'o' && input[stemLength - 2] == 'l') {
+                        char[] result = new char[stemLength + 1];
+                        System.arraycopy(input, 0, result, 0, stemLength);
                         result[result.length - 2] = 'u';
                         result[result.length - 1] = 't';
                         return result;
@@ -681,55 +677,55 @@ public class Lovin {
 
             }
 
-            if(input[stem_length - 1] == 't') {
+            if(input[stemLength - 1] == 't') {
                 // uct -> uc
-                if(stem_length >= 3) {
-                    if(input[stem_length - 3] == 'u' && input[stem_length - 2] == 'c') {
-                        char[] result = new char[stem_length - 1];
+                if(stemLength >= 3) {
+                    if(input[stemLength - 3] == 'u' && input[stemLength - 2] == 'c') {
+                        char[] result = new char[stemLength - 1];
                         System.arraycopy(input, 0, result, 0, result.length);
                         return result;
                     }
                     // mit -> mis
-                    if(input[stem_length - 3] == 'm' && input[stem_length - 2] == 'i') {
-                        char[] result = new char[stem_length];
+                    if(input[stemLength - 3] == 'm' && input[stemLength - 2] == 'i') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
                     }
                     // ent -> ens except following m (original paper states end -> ens, but according to http://snowball.tartarus.org/algorithms/lovins/stemmer.html, this was a typo.)
-                    if(input[stem_length - 3] == 'e' && input[stem_length - 2] == 'n' && !(input[stem_length - 4] == 'm')) {
-                        char[] result = new char[stem_length];
+                    if(input[stemLength - 3] == 'e' && input[stemLength - 2] == 'n' && !(input[stemLength - 4] == 'm')) {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
                     }
                     // ert -> ers
-                    if(input[stem_length - 3] == 'e' && input[stem_length - 2] == 'r') {
-                        char[] result = new char[stem_length];
+                    if(input[stemLength - 3] == 'e' && input[stemLength - 2] == 'r') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
                     }
                 }
                 // et -> es except following n
-                if(input[stem_length - 2] == 'e' && (stem_length < 3 || !(input[stem_length - 3] == 'n'))) {
-                    char[] result = new char[stem_length];
+                if(input[stemLength - 2] == 'e' && (stemLength < 3 || !(input[stemLength - 3] == 'n'))) {
+                    char[] result = new char[stemLength];
                     System.arraycopy(input, 0, result, 0, result.length);
                     result[result.length - 1] = 's';
                     return result;
                 }
 
-                if(input[stem_length - 2] == 'p') {
+                if(input[stemLength - 2] == 'p') {
                     // umpt -> um
 
-                    if(stem_length >= 4 && input[stem_length - 4] == 'u' && input[stem_length - 3] == 'm') {
-                        char[] result = new char[stem_length - 2];
+                    if(stemLength >= 4 && input[stemLength - 4] == 'u' && input[stemLength - 3] == 'm') {
+                        char[] result = new char[stemLength - 2];
                         System.arraycopy(input, 0, result, 0, result.length);
                         return result;
                     }
                     // rpt -> rb
-                    if(stem_length >= 3 && input[stem_length - 3] == 'r') {
-                        char[] result = new char[stem_length - 1];
+                    if(stemLength >= 3 && input[stemLength - 3] == 'r') {
+                        char[] result = new char[stemLength - 1];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 'b';
                         return result;
@@ -737,8 +733,8 @@ public class Lovin {
                 }
 
                 // yt -> ys
-                if(input[stem_length - 2] == 'y') {
-                    char[] result = new char[stem_length];
+                if(input[stemLength - 2] == 'y') {
+                    char[] result = new char[stemLength];
                     System.arraycopy(input, 0, result, 0, result.length);
                     result[result.length - 1] = 's';
                     return result;
@@ -748,9 +744,9 @@ public class Lovin {
             }
 
             // urs -> ur
-            if(input[stem_length - 1] == 's') { // Instead of putting all character conditions in this if, I can check for 's', and if it is true, but the other letters are not, we can end the transform here.
-                if(stem_length >= 3 && input[stem_length - 3] == 'u' && input[stem_length - 2] == 'r') {
-                    char[] result = new char[stem_length - 1];
+            if(input[stemLength - 1] == 's') { // Instead of putting all character conditions in this if, I can check for 's', and if it is true, but the other letters are not, we can end the transform here.
+                if(stemLength >= 3 && input[stemLength - 3] == 'u' && input[stemLength - 2] == 'r') {
+                    char[] result = new char[stemLength - 1];
                     System.arraycopy(input, 0, result, 0, result.length);
                     return result;
                 }
@@ -760,37 +756,40 @@ public class Lovin {
 
 
 
-            if(input[stem_length - 1] == 'r') {
-                if(stem_length >= 4) {
+            if(input[stemLength - 1] == 'r') {
+                if(stemLength >= 4) {
                     // istr -> ister
-                    if(input[stem_length - 4] == 'i' && input[stem_length - 3] == 's' && input[stem_length - 2] == 't') {
-                        char[] result = new char[stem_length + 1];
-                        System.arraycopy(input, 0, result, 0, stem_length);
+                    if(input[stemLength - 4] == 'i' && input[stemLength - 3] == 's' && input[stemLength - 2] == 't') {
+                        char[] result = new char[stemLength + 1];
+                        System.arraycopy(input, 0, result, 0, stemLength);
                         result[result.length - 2] = 'e';
                         result[result.length - 1] = 'r';
                         return result;
                     }
                     // metr -> meter
-                    else if(input[stem_length - 4] == 'm' && input[stem_length - 3] == 'e' && input[stem_length - 2] == 't') {
-                        char[] result = new char[stem_length + 1];
-                        System.arraycopy(input, 0, result, 0, stem_length);
+                    else if(input[stemLength - 4] == 'm' && input[stemLength - 3] == 'e' && input[stemLength - 2] == 't') {
+                        char[] result = new char[stemLength + 1];
+                        System.arraycopy(input, 0, result, 0, stemLength);
                         result[result.length - 2] = 'e';
                         result[result.length - 1] = 'r';
                         return result;
                     }
                 }
                 // her -> hes except following p, t
-                if(stem_length >= 3 && input[stem_length - 3] == 'h' && input[stem_length - 2] == 'e' && !(input[stem_length - 4] == 'p' || input[stem_length - 4] == 't')) {
-                    return input;
+                if(stemLength >= 3 && input[stemLength - 3] == 'h' && input[stemLength - 2] == 'e' && !(input[stemLength - 4] == 'p' || input[stemLength - 4] == 't')) {
+                    char[] result = new char[stemLength];
+                    System.arraycopy(input, 0, result, 0, stemLength);
+                    result[result.length - 1] = 's';
+                    return result;
                 }
 
                 return input;
             }
 
             // ul -> l except following a, i, o
-            if(input[stem_length - 1] == 'l') {
-                if(input[stem_length - 2] == 'u' && !(input[stem_length - 3] == 'a' || input[stem_length - 3] == 'i' || input[stem_length - 3] == 'o')) {
-                    char[] result = new char[stem_length - 1];
+            if(input[stemLength - 1] == 'l') {
+                if(input[stemLength - 2] == 'u' && !(input[stemLength - 3] == 'a' || input[stemLength - 3] == 'i' || input[stemLength - 3] == 'o')) {
+                    char[] result = new char[stemLength - 1];
                     System.arraycopy(input, 0, result, 0, result.length);
                     result[result.length - 1] = 'l';
                     return result;
@@ -799,37 +798,37 @@ public class Lovin {
                 return input;
             }
 
-            if(input[stem_length - 1] == 'x') {
-                if(input[stem_length - 2] == 'e') {
+            if(input[stemLength - 1] == 'x') {
+                if(input[stemLength - 2] == 'e') {
                     // bex -> bic
                     // dex -> dic
                     // pex -> pic
                     // tex -> tic
-                    if(stem_length >= 3 && input[stem_length - 3] == 'b' || input[stem_length - 3] == 'd' || input[stem_length - 3] == 'p' || input[stem_length - 3] == 't') {
-                        char[] result = new char[stem_length];
+                    if(stemLength >= 3 && input[stemLength - 3] == 'b' || input[stemLength - 3] == 'd' || input[stemLength - 3] == 'p' || input[stemLength - 3] == 't') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 2] = 'i';
                         result[result.length - 1] = 'c';
                         return result;
                     }
                     // ex -> ec
-                    char[] result = new char[stem_length];
+                    char[] result = new char[stemLength];
                     System.arraycopy(input, 0, result, 0, result.length);
                     result[result.length - 1] = 'c';
                     return result;
                 }
                 // ax -> ac
                 // ix -> ic
-                if(input[stem_length - 2] == 'a' || input[stem_length - 2] == 'i') {
-                    char[] result = new char[stem_length];
-                    System.arraycopy(input, 0, result, 0, stem_length);
+                if(input[stemLength - 2] == 'a' || input[stemLength - 2] == 'i') {
+                    char[] result = new char[stemLength];
+                    System.arraycopy(input, 0, result, 0, stemLength);
                     result[result.length - 1] = 'c';
                     return result;
                 }
                 // lux -> luc
-                if(stem_length >= 3 && input[stem_length - 3] == 'l' && input[stem_length - 2] == 'u') {
-                    char[] result = new char[stem_length];
-                    System.arraycopy(input, 0, result, 0, stem_length);
+                if(stemLength >= 3 && input[stemLength - 3] == 'l' && input[stemLength - 2] == 'u') {
+                    char[] result = new char[stemLength];
+                    System.arraycopy(input, 0, result, 0, stemLength);
                     result[result.length - 1] = 'c';
                     return result;
                 }
@@ -837,57 +836,57 @@ public class Lovin {
                 return input;
             }
 
-            if(input[stem_length - 1] == 'd') {
+            if(input[stemLength - 1] == 'd') {
                 // uad -> uas
                 // vad -> vas
-                if(stem_length >= 3 && (input[stem_length - 3] == 'u' || input[stem_length - 3] == 'v') && input[stem_length - 2] == 'a') {
-                    char[] result = new char[stem_length];
+                if(stemLength >= 3 && (input[stemLength - 3] == 'u' || input[stemLength - 3] == 'v') && input[stemLength - 2] == 'a') {
+                    char[] result = new char[stemLength];
                     System.arraycopy(input, 0, result, 0, result.length);
                     result[result.length - 1] = 's';
                     return result;
                 }
 
-                if(input[stem_length - 2] == 'i') {
+                if(input[stemLength - 2] == 'i') {
                     // cid -> cis
                     // lid -> lis
-                    if(stem_length >= 3 && input[stem_length - 3] == 'c' || input[stem_length - 3] == 'l') {
-                        char[] result = new char[stem_length];
+                    if(stemLength >= 3 && input[stemLength - 3] == 'c' || input[stemLength - 3] == 'l') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
                     }
                     // erid -> eris
-                    if(stem_length >= 4 && input[stem_length - 4] == 'e' && input[stem_length - 3] == 'r') {
-                        char[] result = new char[stem_length];
+                    if(stemLength >= 4 && input[stemLength - 4] == 'e' && input[stemLength - 3] == 'r') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
                     }
                 }
 
-                if(input[stem_length - 2] == 'n') {
+                if(input[stemLength - 2] == 'n') {
                     // pand -> pans
                     // ond -> ons
-                    if(stem_length >= 4 && (input[stem_length - 4] == 'p' && input[stem_length - 3] == 'a') || input[stem_length - 3] == 'o') {
-                        char[] result = new char[stem_length];
+                    if(stemLength >= 4 && (input[stemLength - 4] == 'p' && input[stemLength - 3] == 'a') || input[stemLength - 3] == 'o') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
                     }
                     // end -> ens except following s
-                    if(stem_length >= 3 && input[stem_length - 3] == 'e' && !(input[stem_length - 4] == 's')) {
-                        char[] result = new char[stem_length];
+                    if(stemLength >= 3 && input[stemLength - 3] == 'e' && !(input[stemLength - 4] == 's')) {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
                     }
                 }
 
-                if(input[stem_length - 2] == 'u') {
+                if(input[stemLength - 2] == 'u') {
                     // lud -> lus
                     // rud -> rus
-                    if(stem_length >= 3 && input[stem_length - 3] == 'l' || input[stem_length - 3] == 'r') {
-                        char[] result = new char[stem_length];
+                    if(stemLength >= 3 && input[stemLength - 3] == 'l' || input[stemLength - 3] == 'r') {
+                        char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
                         return result;
@@ -898,8 +897,8 @@ public class Lovin {
             }
 
             // yz -> ys
-            if(input[stem_length - 2] == 'y' && input[stem_length - 1] == 'z') {
-                char[] result = new char[stem_length];
+            if(input[stemLength - 2] == 'y' && input[stemLength - 1] == 'z') {
+                char[] result = new char[stemLength];
                 System.arraycopy(input, 0, result, 0, result.length);
                 result[result.length - 1] = 's';
                 return result;
