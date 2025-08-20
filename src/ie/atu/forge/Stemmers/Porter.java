@@ -15,67 +15,67 @@ public class Porter {
     /*
     Porter's stemmer to stem a single word.
      */
-    private static final Map<String, String> step_2_endings = new HashMap<>();
-    private static final Map<String, String> step_3_endings = new HashMap<>();
-    private static final Set<String> step_4_endings = new HashSet<>();
+    private static final Map<String, String> step2Endings = new HashMap<>();
+    private static final Map<String, String> step3Endings = new HashMap<>();
+    private static final Set<String> step4Endings = new HashSet<>();
 
     // Initialiser block to add endings to appropriate maps.
     static {
         // Must be measure > 0
-        step_2_endings.put("ational", "ate");
-        step_2_endings.put("tional", "tion");
-        step_2_endings.put("enci", "ence");
-        step_2_endings.put("anci", "ance");
-        step_2_endings.put("izer", "ize");
-        step_2_endings.put("iser", "ise");
-        step_2_endings.put("abli", "able");
-        step_2_endings.put("alli", "al");
-        step_2_endings.put("entli", "ent");
-        step_2_endings.put("eli", "e");
-        step_2_endings.put("ousli", "ous");
-        step_2_endings.put("ization", "ize");
-        step_2_endings.put("isation", "ise");
-        step_2_endings.put("ation", "ate");
-        step_2_endings.put("ator", "ate");
-        step_2_endings.put("alism", "al");
-        step_2_endings.put("iveness", "ive");
-        step_2_endings.put("fulness", "ful");
-        step_2_endings.put("ousness", "ous");
-        step_2_endings.put("aliti", "al");
-        step_2_endings.put("iviti", "ive");
-        step_2_endings.put("biliti", "ble");
+        step2Endings.put("ational", "ate");
+        step2Endings.put("tional", "tion");
+        step2Endings.put("enci", "ence");
+        step2Endings.put("anci", "ance");
+        step2Endings.put("izer", "ize");
+        step2Endings.put("iser", "ise");
+        step2Endings.put("abli", "able");
+        step2Endings.put("alli", "al");
+        step2Endings.put("entli", "ent");
+        step2Endings.put("eli", "e");
+        step2Endings.put("ousli", "ous");
+        step2Endings.put("ization", "ize");
+        step2Endings.put("isation", "ise");
+        step2Endings.put("ation", "ate");
+        step2Endings.put("ator", "ate");
+        step2Endings.put("alism", "al");
+        step2Endings.put("iveness", "ive");
+        step2Endings.put("fulness", "ful");
+        step2Endings.put("ousness", "ous");
+        step2Endings.put("aliti", "al");
+        step2Endings.put("iviti", "ive");
+        step2Endings.put("biliti", "ble");
 
         // Must be measure > 0
-        step_3_endings.put("icate", "ic");
-        step_3_endings.put("ative", "");
-        step_3_endings.put("alize", "al");
-        step_3_endings.put("alise", "al");
-        step_3_endings.put("iciti", "ic");
-        step_3_endings.put("ical", "ic");
-        step_3_endings.put("ful", "");
-        step_3_endings.put("ness", "");
+        step3Endings.put("icate", "ic");
+        step3Endings.put("ative", "");
+        step3Endings.put("alize", "al");
+        step3Endings.put("alise", "al");
+        step3Endings.put("iciti", "ic");
+        step3Endings.put("ical", "ic");
+        step3Endings.put("ful", "");
+        step3Endings.put("ness", "");
 
         // Must be measure > 1
-        step_4_endings.add("al");
-        step_4_endings.add("ance");
-        step_4_endings.add("ence");
-        step_4_endings.add("er");
-        step_4_endings.add("ic");
-        step_4_endings.add("able");
-        step_4_endings.add("ible");
-        step_4_endings.add("ant");
-        step_4_endings.add("ement");
-        step_4_endings.add("ment");
-        step_4_endings.add("ent");
-        step_4_endings.add("ion"); // Also needs to satisfy ending with 's' or 't'
-        step_4_endings.add("ou");
-        step_4_endings.add("ism");
-        step_4_endings.add("ate");
-        step_4_endings.add("iti");
-        step_4_endings.add("ous");
-        step_4_endings.add("ive");
-        step_4_endings.add("ize");
-        step_4_endings.add("ise");
+        step4Endings.add("al");
+        step4Endings.add("ance");
+        step4Endings.add("ence");
+        step4Endings.add("er");
+        step4Endings.add("ic");
+        step4Endings.add("able");
+        step4Endings.add("ible");
+        step4Endings.add("ant");
+        step4Endings.add("ement");
+        step4Endings.add("ment");
+        step4Endings.add("ent");
+        step4Endings.add("ion"); // Also needs to satisfy ending with 's' or 't'
+        step4Endings.add("ou");
+        step4Endings.add("ism");
+        step4Endings.add("ate");
+        step4Endings.add("iti");
+        step4Endings.add("ous");
+        step4Endings.add("ive");
+        step4Endings.add("ize");
+        step4Endings.add("ise");
 
     }
 
@@ -89,7 +89,16 @@ public class Porter {
         StringBuilder result = new StringBuilder();
         char[] chars = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
-        result.append(step_5b(step_5a(step_4(step_3(step_2(step_1c(step_1b(step_1a(chars)))))))));
+        result.append(
+                step5B(
+                        step5A(
+                                step4(
+                                        step3(
+                                                step2(
+                                                        step1C(
+                                                                step1B(
+                                                                        step1A(chars))))))))
+        );
 
         return result.toString();
     }
@@ -108,7 +117,7 @@ public class Porter {
         return stems;
     }
 
-    private static char[] step_1a(char[] input) {
+    private static char[] step1A(char[] input) {
         /*
         sses -> ss
         ies -> i
@@ -141,7 +150,7 @@ public class Porter {
         return input;
     }
 
-    private static char[] step_1b(char[] input) {
+    private static char[] step1B(char[] input) {
         /*
         m>0 eed -> ee
         ed ->
@@ -154,6 +163,7 @@ public class Porter {
             if(input.length > 3 && input[input.length - 3] == 'e') {
                 result = new char[input.length - 1];
                 System.arraycopy(input, 0, result, 0, result.length);
+
                 if(measure(result) > 0) {
                     return result;
                 }
@@ -165,9 +175,9 @@ public class Porter {
             // If the ending is 'ed', and condition_v is satisfied, remove it.
             result = new char[input.length - 2];
             System.arraycopy(input, 0, result, 0, result.length);
-            if(condition_v(result)) {
+            if(conditionV(result)) {
                 // In this case, a further rule is applied, sub_1b
-                result = sub_1b(result);
+                result = sub1B(result);
                 return result;
             }
 
@@ -177,9 +187,9 @@ public class Porter {
         if(input.length > 3 && (input[input.length - 3] == 'i' && input[input.length - 2] == 'n' && input[input.length - 1] == 'g')) {
             result = new char[input.length - 3];
             System.arraycopy(input, 0, result, 0, result.length);
-            if(condition_v(result)) {
+            if(conditionV(result)) {
                 // In this case, a further rule is applied, sub_1b
-                result = sub_1b(result);
+                result = sub1B(result);
                 return result;
             }
         }
@@ -188,7 +198,7 @@ public class Porter {
     }
 
     // If 'ed' or 'ing' are removed in step_1b, do this.
-    private static char[] sub_1b(char[] input) {
+    private static char[] sub1B(char[] input) {
         char[] result;
 
         // If the string ending is 'at', 'bl', or 'iz', add an 'e' to the end of it.
@@ -200,7 +210,7 @@ public class Porter {
         }
 
         // If the ending is a double consonant that is not l, s, or z, make is a single letter (i.e. remove the final letter)
-        char consonant = condition_d(input);
+        char consonant = conditionD(input);
         // '!' indicates no double consonant.
         if(consonant != '!' && consonant != 'l' && consonant != 's' && consonant != 'z') {
             result = new char[input.length - 1];
@@ -209,7 +219,7 @@ public class Porter {
         }
 
         // Finally, if measure == 1, and condition_o, is satisfied, append an 'e' to the end of the stem.
-        if(measure(input) == 1 && condition_o(input)) {
+        if(measure(input) == 1 && conditionO(input)) {
             result = new char[input.length + 1];
             System.arraycopy(input, 0, result, 0, input.length);
             result[result.length - 1] = 'e';
@@ -219,10 +229,10 @@ public class Porter {
         return input;
     }
 
-    private static char[] step_1c(char[] input) {
+    private static char[] step1C(char[] input) {
         char[] result;
 
-        if(condition_v(input) && input[input.length - 1] == 'y') {
+        if(conditionV(input) && input[input.length - 1] == 'y') {
             result = new char[input.length];
             System.arraycopy(input, 0, result, 0, result.length);
             result[result.length - 1] = 'i';
@@ -236,23 +246,23 @@ public class Porter {
     Not sure the best way to go about doing this part. I'm sure efficiency will be suboptimal.
     Thinking putting these into a map may be the best way to go.
      */
-    private static char[] step_2(char[] input) {
-        String input_string = new String(input);
+    private static char[] step2(char[] input) {
+        String inputString = new String(input);
 
         // Check for matching
-        for(String ending: step_2_endings.keySet()) {
-            int input_len = input_string.length();
+        for(String ending: step2Endings.keySet()) {
+            int input_len = inputString.length();
             int ending_len = ending.length();
-            if(input_len > ending_len && input_string.substring(input_len - ending_len).equals(ending)) {
+            if(input_len > ending_len && inputString.substring(input_len - ending_len).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
 
                 // If there is a match, make sure the measure of the stem is > 0
                 if(measure(stem) > 0) {
-                    char[] new_ending = step_2_endings.get(ending).toCharArray();
-                    char[] result = new char[stem.length + new_ending.length];
+                    char[] newEnding = step2Endings.get(ending).toCharArray();
+                    char[] result = new char[stem.length + newEnding.length];
                     System.arraycopy(stem, 0, result, 0, stem.length);
-                    System.arraycopy(new_ending, 0, result, stem.length, new_ending.length);
+                    System.arraycopy(newEnding, 0, result, stem.length, newEnding.length);
                     return result;
                 }
                 break;
@@ -265,20 +275,20 @@ public class Porter {
     /*
     Same idea as step 2, but using different endings (i.e. a different map).
      */
-    private static char[] step_3(char[] input) {
+    private static char[] step3(char[] input) {
         String input_string = new String(input);
 
-        for(String ending: step_3_endings.keySet()) {
-            int input_len = input_string.length();
-            int ending_len = ending.length();
-            if(input_len > ending_len && input_string.substring(input_len - ending_len).equals(ending)) {
+        for(String ending: step3Endings.keySet()) {
+            int inputLen = input_string.length();
+            int endingLen = ending.length();
+            if(inputLen > endingLen && input_string.substring(inputLen - endingLen).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
                 if(measure(stem) > 0) {
-                    char[] new_ending = step_3_endings.get(ending).toCharArray();
-                    char[] result = new char[stem.length + new_ending.length];
+                    char[] newEnding = step3Endings.get(ending).toCharArray();
+                    char[] result = new char[stem.length + newEnding.length];
                     System.arraycopy(stem, 0, result, 0, stem.length);
-                    System.arraycopy(new_ending, 0, result, stem.length, new_ending.length);
+                    System.arraycopy(newEnding, 0, result, stem.length, newEnding.length);
                     return result;
                 }
             }
@@ -287,19 +297,19 @@ public class Porter {
         return input;
     }
 
-    private static char[] step_4(char[] input) {
-        String input_string = new String(input);
+    private static char[] step4(char[] input) {
+        String inputString = new String(input);
 
-        for(String ending: step_4_endings.toArray(new String[0])) {
-            int input_len = input_string.length();
-            int ending_len = ending.length();
-            if(input_len > ending_len && input_string.substring(input_len - ending_len).equals(ending)) {
+        for(String ending: step4Endings.toArray(new String[0])) {
+            int inputLen = inputString.length();
+            int endingLen = ending.length();
+            if(inputLen > endingLen && inputString.substring(inputLen - endingLen).equals(ending)) {
                 char[] stem = new char[input.length - ending.length()];
                 System.arraycopy(input, 0, stem, 0, stem.length);
                 if(measure(stem) > 1) {
                     // For the "ion" entry, the stem must end with 's' or 't', otherwise it is ignored.
                     if(ending.equals("ion")) {
-                        if(!condition_s(stem,'s') && !condition_s(stem,'t')) break;
+                        if(!conditionS(stem,'s') && !conditionS(stem,'t')) break;
                     }
 
                     return stem;
@@ -310,7 +320,7 @@ public class Porter {
         return input;
     }
 
-    private static char[] step_5a(char[] input) {
+    private static char[] step5A(char[] input) {
         if(input[input.length - 1] == 'e') {
             char[] stem = new char[input.length - 1];
             System.arraycopy(input, 0, stem, 0, stem.length);
@@ -318,20 +328,20 @@ public class Porter {
             if(m > 1) {
                 return stem;
             }
-            else if(m == 1 && !condition_o(stem)) {
+            else if(m == 1 && !conditionO(stem)) {
                 return stem;
             }
         }
         return input;
     }
 
-    private static char[] step_5b(char[] input) {
+    private static char[] step5B(char[] input) {
         char[] stem = new char[input.length - 1];
         System.arraycopy(input, 0, stem, 0, stem.length);
         int m = measure(stem);
 
         // If measure > 1 and the word ends with a double 'l'
-        if(m > 1 && condition_d(input) == 'l') {
+        if(m > 1 && conditionD(input) == 'l') {
             return stem;
         }
 
@@ -358,21 +368,21 @@ public class Porter {
             }
         }
 
-        char[] merged_chars = new char[chars.length];
+        char[] mergedChars = new char[chars.length];
         int size = 0;
         // Second pass. Merge adjacent 'C' to a single 'C', same for 'V'.
-        merged_chars[size] = chars[0];
+        mergedChars[size] = chars[0];
         size++;
         for (int i = 1; i < chars.length; i++) {
             if (chars[i - 1] != chars[i]) {
-                merged_chars[size] = chars[i];
+                mergedChars[size] = chars[i];
                 size++;
             }
         }
 
         char[] merged = new char[size];
-        System.arraycopy(merged_chars, 0, merged, 0, size);
-        merged_chars = null;
+        System.arraycopy(mergedChars, 0, merged, 0, size);
+        mergedChars = null;
 
         // Measure is what we will return, it is the count of consecutive VC in the word.
         int m = 0;
@@ -395,12 +405,12 @@ public class Porter {
     }
 
     // Check if the stem ends with a specific letter.
-    private static boolean condition_s(char[] input, char letter) {
+    private static boolean conditionS(char[] input, char letter) {
         return input[input.length - 1] == letter;
     }
 
     // Check if the stem contains a vowel.
-    private static boolean condition_v(char[] input) {
+    private static boolean conditionV(char[] input) {
         char[] vowels = {'a', 'e', 'i', 'o', 'u'};
 
         for(char i: input) {
@@ -415,7 +425,7 @@ public class Porter {
     }
 
     // Check if the stem ends with a double consonant (e.g., tt, ss, etc.). Returns the consonant if true, returns '!' if false.
-    private static char condition_d(char[] input) {
+    private static char conditionD(char[] input) {
         // Check if the stem ending is a repeated letter
         if(input[input.length - 1] == input[input.length - 2]) {
             char[] vowels = {'a', 'e', 'i', 'o', 'u'};
@@ -433,7 +443,7 @@ public class Porter {
     }
 
     // Check if stem ends with cvc, and the second c is not w, x, or y.
-    private static boolean condition_o(char[] input) {
+    private static boolean conditionO(char[] input) {
         char[] vowels = {'a', 'e', 'i', 'o', 'u'};
         char[] consonants = {'w', 'x', 'y'}; // Consonants the last letter cannot be.
 
