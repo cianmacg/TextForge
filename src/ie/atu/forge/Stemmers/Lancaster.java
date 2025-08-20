@@ -10,7 +10,7 @@ import java.util.Map;
  * This is an aggressive stemmer, which uses the rules from the paper exactly.
  */
 public class Lancaster {
-    private static final Map<String, String> intact_rules = new HashMap<>();
+    private static final Map<String, String> intactRules = new HashMap<>();
     private static final Map<String, String> rules = new HashMap<>();
 
     /*
@@ -26,8 +26,8 @@ public class Lancaster {
      */
     static{
         // Page 1
-        intact_rules.put("ai", "2.");
-        intact_rules.put("a", "1.");
+        intactRules.put("ai", "2.");
+        intactRules.put("a", "1.");
         rules.put("bb", "1.");
         rules.put("city", "3s.");
         rules.put("ci", "2>");
@@ -45,10 +45,10 @@ public class Lancaster {
         rules.put("gai", "3y.");
         rules.put("ga", "2>");
         rules.put("gg", "1.");
-        intact_rules.put("ht", "2.");
+        intactRules.put("ht", "2.");
         rules.put("hsiug", "5ct.");
         rules.put("hsi", "3>");
-        intact_rules.put("i", "1.");
+        intactRules.put("i", "1.");
         rules.put("i", "1y>");
         rules.put("ji", "1d.");
         rules.put("juf", "1s.");
@@ -73,7 +73,7 @@ public class Lancaster {
         rules.put("la", "2>");
         rules.put("ll", "1.");
         rules.put("mui", "3.");
-        intact_rules.put("mu", "2.");
+        intactRules.put("mu", "2.");
         rules.put("msi", "3>");
         rules.put("mm", "1.");
         rules.put("nois", "4j>");
@@ -101,8 +101,8 @@ public class Lancaster {
         rules.put("ssen", "4>");
         rules.put("ss", "0.");
         rules.put("suo", "3>");
-        intact_rules.put("su", "2.");
-        intact_rules.put("s", "1>");
+        intactRules.put("su", "2.");
+        intactRules.put("s", "1>");
         rules.put("s", "0.");
         rules.put("tacilp", "4y.");
         rules.put("ta", "2>");
@@ -156,7 +156,7 @@ public class Lancaster {
         }
         char[] stem = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
-        return new String(find_intact_rule(stem));
+        return new String(findIntactRule(stem));
     }
 
     /**
@@ -177,7 +177,7 @@ public class Lancaster {
     /*
      The largest intact ending is only 2 characters. Because of this, I'm not going to bother with a loop.
      */
-    private static char[] find_intact_rule(char[] input) {
+    private static char[] findIntactRule(char[] input) {
         /*
         This is the same as 'find_rule', but is used on the first pass.
         On the first pass, we also need to look at 'intact' rules.
@@ -191,22 +191,22 @@ public class Lancaster {
          Need to find what ending length to begin with. The maximum ending length in the map is 6.
          The first ending length we should check is the smaller of input.length - 2 (as the smallest possible stem length is 2) and 6.
          */
-        int end_len = Math.min(input.length - 2, 6);
+        int endLen = Math.min(input.length - 2, 6);
         char[] ending;
         // Keep looking for smaller ending matches until the stem is different from the original input.
-        while(end_len >= 3) {
-            ending = new char[end_len];
+        while(endLen >= 3) {
+            ending = new char[endLen];
             /*
              Originally I was using 'System.arraycopy' here, but since the keys are the reverse of the ending (matching how they are in the original Lancaster paper),
              I thought it would be better to do this manually.
              */
-            for(int i = 0; i < end_len; i++) {
+            for(int i = 0; i < endLen; i++) {
                 ending[i] = input[input.length - 1 - i];
             }
             String rule = rules.get(new String(ending));
 
             if(rule!=null) {
-                char[] stem = apply_rule(input, rule.toCharArray());
+                char[] stem = applyRule(input, rule.toCharArray());
 
                 if(!Arrays.equals(input, stem)) {
                     return stem;
@@ -214,27 +214,27 @@ public class Lancaster {
             }
 
             // No rule was found, reduce the ending size and try again.
-            end_len--;
+            endLen--;
         }
 
         /*
          Intact rules only exist for endings of length 2 or less.
          I could have put this as an 'if' condition in the other loop, but thought removing that check for some of the endings lengths might improve performance.
          */
-        while(end_len >= 1) {
-            ending = new char[end_len];
+        while(endLen >= 1) {
+            ending = new char[endLen];
             /*
              Originally I was using 'System.arraycopy' here, but since the keys are the reverse of the ending (matching how they are in the original Lancaster paper),
              I thought it would be better to do this manually.
              */
-            for(int i = 0; i < end_len; i++) {
+            for(int i = 0; i < endLen; i++) {
                 ending[i] = input[input.length - 1 - i];
             }
 
             // Search intact rules first.
-            String rule = intact_rules.get(new String(ending));
+            String rule = intactRules.get(new String(ending));
             if(rule!=null) {
-                char[] stem = apply_rule(input, rule.toCharArray());
+                char[] stem = applyRule(input, rule.toCharArray());
 
                 if(!Arrays.equals(input, stem)) {
                     return stem;
@@ -244,7 +244,7 @@ public class Lancaster {
             // If no intact rules exist, check the other rules.
             rule = rules.get(new String(ending));
             if(rule!=null) {
-                char[] stem = apply_rule(input, rule.toCharArray());
+                char[] stem = applyRule(input, rule.toCharArray());
 
                 if(!Arrays.equals(input, stem)) {
                     return stem;
@@ -252,7 +252,7 @@ public class Lancaster {
             }
 
             // No rule was found, reduce the ending size and try again.
-            end_len--;
+            endLen--;
         }
 
 
@@ -261,34 +261,34 @@ public class Lancaster {
     }
 
     // Find an appropriate rule from the rule map.
-    private static char[] find_rule(char[] input) {
+    private static char[] findRule(char[] input) {
         /*
          Need to find what ending length to begin with. The maximum ending length in the map is 6.
          The first ending length we should check is the smaller of input.length - 2 (as the smallest possible stem length is 2) and 6.
          */
-        int end_len = Math.min(input.length - 2, 6);
+        int endLen = Math.min(input.length - 2, 6);
         // Keep looking for smaller ending matches until the stem is different from the original input.
-        while(end_len >= 1) {
-            char[] ending = new char[end_len];
+        while(endLen >= 1) {
+            char[] ending = new char[endLen];
             /*
              Originally I was using 'System.arraycopy' here, but since the keys are the reverse of the ending (matching how they are in the original Lancaster paper),
              I thought it would be better to do this manually.
              */
-            for(int i = 0; i < end_len; i++) {
+            for(int i = 0; i < endLen; i++) {
                 ending[i] = input[input.length - 1 - i];
             }
             String rule = rules.get(new String(ending));
 
             if(rule!=null) {
-                char[] stem = apply_rule(input, rule.toCharArray());
+                char[] stem = applyRule(input, rule.toCharArray());
 
-                if(!Arrays.equals(input, stem)) {
+                if(!Arrays.equals(input, stem)) { // If the rule was applied, and the stem was accepted, the 'stem' will be different from the input.
                     return stem;
                 }
             }
 
             // No rule was found, reduce the ending size and try again.
-            end_len--;
+            endLen--;
         }
 
         // If no matching rule was found, no stemming can be done. Return the original input.
@@ -296,7 +296,7 @@ public class Lancaster {
     }
 
     // Apply a rule to a word.
-    private static char[] apply_rule(char[] input, char[] rule) {
+    private static char[] applyRule(char[] input, char[] rule) {
         char[] stem;
 
         // The first character in the rule tells us how many characters to remove from the input word.
@@ -310,21 +310,21 @@ public class Lancaster {
         }
 
         // Before we go any further, make sure the stem satisfies the minimum stem rules. If it doesn't, return the original input.
-        if(!verify_stem(stem)){
+        if(!verifyStem(stem)){
             return input;
         }
 
         // If the final character of the rule is '>', it means we continue to try to stem the word further. If it is '.'.
         // Since '>' and '.' are the only possible values, we check for '>', and otherwise it must be '.'.
         if(rule[rule.length - 1] == '>') {
-            return find_rule(stem);
+            return findRule(stem);
         }
 
         return stem;
     }
 
     // A stem must satisfy these conditions to be accepted.
-    private static boolean verify_stem(char[] stem) {
+    private static boolean verifyStem(char[] stem) {
         char[] vowels = new char[] { 'a', 'e', 'i', 'o', 'u' };
         int len = stem.length;
         // If the stem begins with a vowel, the stem must contain at least 2 letters.
