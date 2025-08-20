@@ -639,7 +639,7 @@ public class Lovins {
     private static char[] transform(char[] input) {
         int stemLength = input.length;
 
-        // The minimum transformation size is the final 2 characters of an input, thus the input must be atleast this size.
+        // The minimum transformation size is the final 2 characters of an input, thus the input must be at least this size.
         if(stemLength >= 2) {
             // Remove one of double b, d, g, l, m, n, p, r, s, t
             if(input[stemLength - 1] == input[stemLength - 2]) {

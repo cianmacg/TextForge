@@ -1,10 +1,9 @@
 package Tests.Stemmers;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import ie.atu.forge.Stemmers.Lovin;
+import ie.atu.forge.Stemmers.Lovins;
 
-public class LovinTest {
+public class LovinsTest {
     public static void main(String[] args) {
         String[] inputs = {
                 "magnesia",
@@ -119,7 +118,7 @@ public class LovinTest {
         for (int i = 0; i < inputs.length; i++) {
             String input = inputs[i];
             String expectedStem = expected[i];
-            assertEquals(expectedStem, Lovin.stem(input), "Failed at index " + i + " for word: " + input);
+            assertEquals(expectedStem, Lovins.stem(input), "Failed at index " + i + " for word: " + input);
         }
     }
 }
