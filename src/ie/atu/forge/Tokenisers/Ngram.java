@@ -1,6 +1,6 @@
 package ie.atu.forge.Tokenisers;
 
-// Character level N-gram tokenisation. For word N-grams, use Shingle.'
+// Character level N-gram tokenisation. For word N-grams, use Shingle.
 
 /**
  * Character level N-gram tokensiation. For word N-gram, use Shingle.
