@@ -18,7 +18,8 @@ record Pair(int first, int second) {
     @Override
     public int hashCode() {
         return Objects.hash(first, second);
-    }}
+    }
+}
 
 
 public class BPE {
@@ -29,7 +30,7 @@ public class BPE {
     private final Map<Pair, Integer> pairFreq = new HashMap<>();
 
     public BPE() {
-        // Initialise vocabulary with all byte representations of characters (UTF-8).
+        // Initialise vocabulary with all single byte representations.
         for(int i = 0; i < 256; i++) {
             ByteSequence token = new ByteSequence(new byte[]{(byte) i});
             inverseVocab.put(token, i);
@@ -66,7 +67,7 @@ public class BPE {
             if(inverseVocab.get(goodSequence) == null) {
                 throw new RuntimeException("Value at key does not exist in inverseVocab.");
             }
-            // Output the best match found
+            // Store the best match found
             encoding[tokenCounter++] = inverseVocab.get(goodSequence);
 
             // Move start forward by the *length of the match*
@@ -124,15 +125,16 @@ public class BPE {
         int maxIter = vocabSize + count; // 256 (count) is the base vocab size (single characters)
         // Now that our vocabulary has been initialised, we can expand it by merging tokens together. Using count in place of vocab.size, as they should be the same anyway.
         while(count < maxIter) {
-            Pair best_pair = findBestPair(tokenCorpus);
+            Pair best_pair = findBestPair(tokenCorpus); // Finds the most frequent pair
+
             if(best_pair!=null) {
                 int leftToken = best_pair.first(), rightToken = best_pair.second();
-                int tokenId = addToken(leftToken, rightToken);
+                int tokenId = addToken(leftToken, rightToken); // Adds the new merged pair token to the vocabulary
 
                 // Update the token corpus with the new merged token.
                 tokenCorpus = mergeTokens(tokenId, leftToken, rightToken, tokenCorpus);
-                countPair(tokenId, leftToken, rightToken, tokenCorpus);
-                count++;
+                countPair(tokenId, leftToken, rightToken, tokenCorpus); // Counts token pairs for the new merged token
+                count++; // Updates the current vocabulary size
             } else {   // If p is null, it means there are no pairs left to merge. We need to end here.
                 System.out.println("No pairs left to be merged.");
                 return;
@@ -178,6 +180,7 @@ public class BPE {
         }
     }
 
+    // Simply returns the pair with the highest count.
     private Pair findBestPair(int[] corpus) {
         Pair bestPair = null;
         int count = 0;
@@ -351,7 +354,8 @@ public class BPE {
         writer.write('}');
         writer.close();
     }
-// Helper method to escape special JSON characters
+
+    // Helper method to escape special JSON characters
     private static String escapeJsonString(String input) {
         return input.replace("\\", "\\\\")
                 .replace("\"", "\\\"")
