@@ -108,4 +108,181 @@ public class BagOfWordsTest {
         assertEquals(0, bow.totalWordCount());
         assertEquals(0, bow.getCount("a"));
     }
+
+    // NEW TESTS FOR VECTORISE FUNCTION
+
+    @Test
+    public void testVectoriseEmptyBag() {
+        BagOfWords bow = new BagOfWords();
+        String[] text = {"hello", "world"};
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(0, vector.length);
+    }
+
+    @Test
+    public void testVectoriseEmptyText() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana", "cherry"});
+        String[] text = {};
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(3, vector.length);
+        assertArrayEquals(new int[]{0, 0, 0}, vector);
+    }
+
+    @Test
+    public void testVectoriseNullText() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana"});
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            bow.vectorise(null);
+        });
+    }
+
+    @Test
+    public void testVectoriseExactMatch() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana", "cherry"});
+        String[] text = {"apple", "banana", "cherry"};
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(3, vector.length);
+        // Words are sorted alphabetically: apple, banana, cherry
+        assertArrayEquals(new int[]{1, 1, 1}, vector);
+    }
+
+    @Test
+    public void testVectoriseWithRepeatedWords() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana", "cherry"});
+        String[] text = {"apple", "apple", "banana", "cherry", "cherry", "cherry"};
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(3, vector.length);
+        // Words are sorted alphabetically: apple, banana, cherry
+        assertArrayEquals(new int[]{2, 1, 3}, vector); // apple: 2, banana: 1, cherry: 3
+    }
+
+    @Test
+    public void testVectorisePartialMatch() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana", "cherry", "date"});
+        String[] text = {"apple", "banana", "grape"}; // grape not in bag
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(4, vector.length);
+        // Words are sorted alphabetically: apple, banana, cherry, date
+        assertArrayEquals(new int[]{1, 1, 0, 0}, vector); // apple: 1, banana: 1, cherry: 0, date: 0
+    }
+
+    @Test
+    public void testVectoriseNoMatch() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana", "cherry"});
+        String[] text = {"grape", "orange", "kiwi"}; // none in bag
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(3, vector.length);
+        assertArrayEquals(new int[]{0, 0, 0}, vector);
+    }
+
+    @Test
+    public void testVectoriseCaseInsensitive() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana"});
+        String[] text = {"APPLE", "Apple", "BANANA", "bAnAnA"};
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(2, vector.length);
+        // Words are sorted alphabetically: apple, banana
+        assertArrayEquals(new int[]{2, 2}, vector); // apple: 2, banana: 2
+    }
+
+    @Test
+    public void testVectoriseWithNullAndEmptyStrings() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"apple", "banana"});
+        String[] text = {"apple", null, "", "banana", null};
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(2, vector.length);
+        // Words are sorted alphabetically: apple, banana
+        assertArrayEquals(new int[]{1, 1}, vector); // null and empty should be ignored
+    }
+
+    @Test
+    public void testVectoriseConsistentOrdering() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"zebra", "apple", "banana"});
+
+        String[] text1 = {"apple", "zebra"};
+        String[] text2 = {"zebra", "apple"};
+
+        int[] vector1 = bow.vectorise(text1);
+        int[] vector2 = bow.vectorise(text2);
+
+        // Vectors should be identical regardless of input order
+        assertArrayEquals(vector1, vector2);
+    }
+
+    @Test
+    public void testVectoriseLargeInput() {
+        BagOfWords bow = new BagOfWords();
+        bow.add(new String[]{"the", "quick", "brown", "fox"});
+
+        String[] text = new String[1000];
+        Arrays.fill(text, "the");
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(4, vector.length);
+        // Words are sorted alphabetically: brown, fox, quick, the
+        assertArrayEquals(new int[]{0, 0, 0, 1000}, vector); // brown: 0, fox: 0, quick: 0, the: 1000
+    }
+
+    @Test
+    public void testVectoriseAfterBagModification() {
+        BagOfWords bow = new BagOfWords();
+        bow.add("apple");
+
+        String[] text = {"apple", "banana"};
+        int[] vector1 = bow.vectorise(text);
+
+        bow.add("banana"); // Add banana to bag
+        int[] vector2 = bow.vectorise(text);
+
+        // First vector should be length 1, second should be length 2
+        assertEquals(1, vector1.length);
+        assertEquals(2, vector2.length);
+
+        // First vector: only apple in bag
+        assertArrayEquals(new int[]{1}, vector1); // apple: 1
+
+        // Second vector: apple and banana in bag (sorted alphabetically)
+        assertArrayEquals(new int[]{1, 1}, vector2); // apple: 1, banana: 1
+    }
+
+    @Test
+    public void testVectoriseSortingOrder() {
+        BagOfWords bow = new BagOfWords();
+        // Add words in non-alphabetical order
+        bow.add(new String[]{"zebra", "apple", "banana", "cherry"});
+        String[] text = {"zebra", "apple", "cherry"};
+
+        int[] vector = bow.vectorise(text);
+
+        assertEquals(4, vector.length);
+        // Words should be sorted alphabetically: apple, banana, cherry, zebra
+        assertArrayEquals(new int[]{1, 0, 1, 1}, vector); // apple: 1, banana: 0, cherry: 1, zebra: 1
+    }
 }

@@ -9,7 +9,7 @@ public class BagOfWords {
     private final Map<String, Integer> bag = new HashMap<String, Integer>();
 
     /**
-     * Adds a word to the bag. Assumes any necessary text normalisation has already been done.
+     * Adds a word to the bag (corpus). Assumes any necessary text normalisation has already been done.
      *
      * @param word The word to be added.
      */
@@ -20,7 +20,7 @@ public class BagOfWords {
     }
 
     /**
-     * Adds an array of words to the bag. Assumes any necessary text normalisation has already been done.
+     * Adds an array of words to the bag (corpus). Assumes any necessary text normalisation has already been done.
      *
      * @param words The words to be added.
      */
@@ -40,8 +40,41 @@ public class BagOfWords {
         add(sentence.replaceAll("\\p{Punct}", "").split("\\s+")); // \\p{Punct} removes punctuation. \\s+ splits on white space.
     }
 
+    /**
+     * Converts the given text array into a vector of integers (counts) based on the words in the bag (corpus).
+     * If a word appears in the text array but not in the bag, it won't be represented in the vector.
+     * If a word in the bag is not present in the text array, it will receive a value of 0. Otherwise, the value will be the number of times the word appears in the text array.
+     * @param text The text to be vectorised.
+     * @return The vector representation of the provided text array.
+     */
+    public int[] vectorise(String[] text) throws IllegalArgumentException {
+        if(text == null) throw new IllegalArgumentException("Attempted to vectorise a null text.");
+
+        int[] vector = new int[size()];
+        Map<String, Integer> counts = new HashMap<>();
+
+        // First step is to count how often each word appears in the text array.
+        for(String word: text) {
+            String cleanedWord = cleanWord(word);
+            counts.put(cleanedWord, counts.computeIfAbsent(cleanedWord, k -> 0) + 1);
+        }
+
+        // Guarantee the corpus words are sorted each time, as using a hashmap will not guarantee order by itself. An alternative is using a TreeMap, however TreeMap look up times are O(log n), while HashMaps are O(1).
+        List<String> vocab = new ArrayList<>(bag.keySet());
+        Collections.sort(vocab);
+
+        // For every word in the bag (corpus), find out how often it appears in the text array, and build the vector.
+        for(int i = 0; i < vocab.size(); i++) {
+            vector[i] = counts.getOrDefault(vocab.get(i), 0);
+        }
+
+        return vector;
+    }
+
+
     // Currently only makes everything lower case. Can easily be expanded upon in the future.
     private String cleanWord(String word) {
+        if(word == null) return word;
         return word.toLowerCase();
     }
 
