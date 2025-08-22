@@ -115,15 +115,19 @@ public class TFIDF {
             addTermsToDocumentFrequency(addedTerms);    // Add terms to overall document frequency (if it hasn't previously been added). Terms should only be incremented once per document (i.e. even if a word appears many times in the document, it should only increase the corpus count by 1).
         }
 
-        double[] vector = new double[corpusTermFreq.size()];
-        int pos = 0;
-        // Begin calculations
-        for(Map.Entry<String, Integer> term: corpusTermFreq.entrySet()) {
-            double tf = (double) termCounts.getOrDefault(term.getKey(), 0) / len;
-            double idf = Math.log((1.0d + documentCount) / (1.0d + term.getValue()));
+        // To ensure the same order each time a vector is created (assuming no new terms added)
+        List<String> vocab = new ArrayList<>(corpusTermFreq.keySet());
+        Collections.sort(vocab);
 
-            vector[pos] = (tf * idf);
-            pos++;
+        double[] vector = new double[corpusTermFreq.size()];
+
+        // Begin calculations
+        for(int i = 0; i < vocab.size(); i++) {
+            String term = vocab.get(i);
+            double tf = (double) termCounts.getOrDefault(term, 0) / len;
+            double idf = Math.log((1.0d + documentCount) / (1.0d + corpusTermFreq.get(term))); // This idf calculation includes smoothing (+ 1.0d) to ensure no division by 0 errors.
+
+            vector[i] = (tf * idf);
         }
 
         return vector;
