@@ -410,7 +410,7 @@ public class Lovins {
      * @return The result of applying the stemming rules.
      */
     public static String stem(String input) {
-        if(input.length() <= 2) return input;
+        if(input.length() <= 2) return input.toLowerCase(); // To maintain consistency, input it converted to lower case here.
         // The minimum stem length we can have is 2, so no point in checking any ending with a greater length than input.length - 2.
         // This will help us determine which map begin looking for endings in. The index for an ending length is the ending length - 1.
         int endingMapIndex = Math.min(input.length() - MIN_STEM_LENGTH, MAX_ENDING_LENGTH) - 1;

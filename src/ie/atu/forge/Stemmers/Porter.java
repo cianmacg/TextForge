@@ -86,6 +86,8 @@ public class Porter {
      * @return The result of applying the stemming rules to the word.
      */
     public static String stem(String input) {
+        if(input == null || input.length() <= 0) return new String();
+
         StringBuilder result = new StringBuilder();
         char[] chars = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
@@ -349,6 +351,8 @@ public class Porter {
     }
 
     private static int measure(char[] input) {
+        if(input.length <= 0) return 0;
+
         char[] chars = Arrays.copyOf(input, input.length);
 
         // First Pass. Change characters to 'C' for consonant or 'V' for vowel.

@@ -152,7 +152,7 @@ public class Lancaster {
      */
     public static String stem(String input) {
         if(input.length() <= 0) {
-            return input;
+            return input.toLowerCase(); // For consistency, converted to lower case.
         }
         char[] stem = input.replaceAll("[^a-zA-Z ]", "").toLowerCase().toCharArray();
 
