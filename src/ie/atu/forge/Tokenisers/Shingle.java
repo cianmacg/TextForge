@@ -15,12 +15,11 @@ public class Shingle {
      * @return A String array containing the tokens.
      */
     public static String[] tokenise(String input, int window) {
-        String[] words = input.split("\\s+");
+        if(input == null || input.length() <= window || window <= 0) return new String[0];
 
+        String[] words = input.strip().split("\\s+"); // Remove leading/trailing whitespace before splitting
 
-        if(words.length <= window) {
-            return new String[0];
-        }
+        if(words.length < window) return new String[0];
 
         String[] tokens = new String[words.length - window + 1];
 
