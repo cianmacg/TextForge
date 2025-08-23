@@ -2,6 +2,7 @@ package Tests.Similarity.Alignment;
 
 import ie.atu.forge.Similarity.Alignment.Hamming;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -37,8 +38,9 @@ public class HammingTest {
 
     @Test
     public void testUnequalLength() {
-        // Expect an exception or some specific handling
-        assertEquals(-1, Hamming.distance("ABC", "AB"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Hamming.distance("ABC", "AB");
+        });
     }
 
     @Test
