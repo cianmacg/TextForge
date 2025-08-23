@@ -1,7 +1,6 @@
 package Tests.Stemmers;
 
 import ie.atu.forge.Stemmers.Lancaster;
-import ie.atu.forge.Stemmers.Lovin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
