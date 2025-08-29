@@ -234,7 +234,9 @@ public class Porter {
     private static char[] step1C(char[] input) {
         char[] result;
 
-        if(conditionV(input) && input[input.length - 1] == 'y') {
+        char[] inputWithoutY = new char[input.length - 1];
+        System.arraycopy(input, 0, inputWithoutY, 0, inputWithoutY.length);
+        if(conditionV(inputWithoutY) && input[input.length - 1] == 'y') {
             result = new char[input.length];
             System.arraycopy(input, 0, result, 0, result.length);
             result[result.length - 1] = 'i';
@@ -249,7 +251,7 @@ public class Porter {
     Thinking putting these into a map may be the best way to go.
      */
     private static char[] step2(char[] input) {
-        String inputString = new String(input);
+/*        String inputString = new String(input);
 
         // Check for matching
         for(String ending: step2Endings.keySet()) {
@@ -269,6 +271,27 @@ public class Porter {
                 }
                 break;
             }
+        }*/
+
+        // The largest step2 ending is 7 characters, begin with that. The minimum is size 3
+        for(int i = 7; i > 2; i--) {
+            if(input.length < i) continue;
+            char[] suffix = new char[i];
+            System.arraycopy(input, input.length - i, suffix, 0, suffix.length);
+
+            String ending = step2Endings.get(new String(suffix));
+            if(ending != null) {
+                char[] stem = new char[input.length - (suffix.length)];
+                System.arraycopy(input, 0, stem, 0, stem.length);
+                // If there is a match, make sure the measure of the stem is > 0
+                if(measure(stem) > 0) {
+                    char[] newEnding = ending.toCharArray();
+                    char[] result = new char[stem.length + newEnding.length];
+                    System.arraycopy(stem, 0, result, 0, stem.length);
+                    System.arraycopy(newEnding, 0, result, stem.length, newEnding.length);
+                    return result;
+                }
+            }
         }
 
         return input;
@@ -278,16 +301,18 @@ public class Porter {
     Same idea as step 2, but using different endings (i.e. a different map).
      */
     private static char[] step3(char[] input) {
-        String input_string = new String(input);
+        // The largest step3 ending is 5 characters, begin with that. The minimum is size 3
+        for(int i = 5; i > 2; i--) {
+            if(input.length < i) continue;
+            char[] suffix = new char[i];
+            System.arraycopy(input, input.length - i, suffix, 0, suffix.length);
 
-        for(String ending: step3Endings.keySet()) {
-            int inputLen = input_string.length();
-            int endingLen = ending.length();
-            if(inputLen > endingLen && input_string.substring(inputLen - endingLen).equals(ending)) {
-                char[] stem = new char[input.length - ending.length()];
+            String ending = step3Endings.get(new String(suffix));
+            if(ending != null) {
+                char[] stem = new char[input.length - (suffix.length)];
                 System.arraycopy(input, 0, stem, 0, stem.length);
-                if(measure(stem) > 0) {
-                    char[] newEnding = step3Endings.get(ending).toCharArray();
+                if (measure(stem) > 0) {
+                    char[] newEnding = ending.toCharArray();
                     char[] result = new char[stem.length + newEnding.length];
                     System.arraycopy(stem, 0, result, 0, stem.length);
                     System.arraycopy(newEnding, 0, result, stem.length, newEnding.length);
@@ -300,18 +325,19 @@ public class Porter {
     }
 
     private static char[] step4(char[] input) {
-        String inputString = new String(input);
+        // The largest step4 ending is 5 characters, begin with that. The minimum is size 2
+        for(int i = 5; i > 1; i--) {
+            if(input.length < i) continue;
+            char[] suffix = new char[i];
+            System.arraycopy(input, input.length - i, suffix, 0, suffix.length);
 
-        for(String ending: step4Endings.toArray(new String[0])) {
-            int inputLen = inputString.length();
-            int endingLen = ending.length();
-            if(inputLen > endingLen && inputString.substring(inputLen - endingLen).equals(ending)) {
-                char[] stem = new char[input.length - ending.length()];
+            if(step4Endings.contains(new String(suffix))) {
+                char[] stem = new char[input.length - suffix.length];
                 System.arraycopy(input, 0, stem, 0, stem.length);
-                if(measure(stem) > 1) {
+                if (measure(stem) > 1) {
                     // For the "ion" entry, the stem must end with 's' or 't', otherwise it is ignored.
-                    if(ending.equals("ion")) {
-                        if(!conditionS(stem,'s') && !conditionS(stem,'t')) break;
+                    if (new String(suffix).equals("ion")) {
+                        if (!conditionS(stem, 's') && !conditionS(stem, 't')) break;
                     }
 
                     return stem;
@@ -417,11 +443,28 @@ public class Porter {
     private static boolean conditionV(char[] input) {
         char[] vowels = {'a', 'e', 'i', 'o', 'u'};
 
-        for(char i: input) {
+        for(int i = 0; i < input.length; i++) {
+            char c = input[i];
+
             for (char v: vowels) {
-                if (i == v) {
+                if (c == v) {
                     return true;
                 }
+            }
+
+            // A 'y' is considered a vowel if it is immediately preceded by a consonant
+            if(i > 0 && c == 'y') {
+                char p = input[i - 1]; // preceding character
+                boolean consonant = true;
+                // If p is a vowel, break from here.
+                for(char v: vowels) {
+                    if(p == v) {
+                        consonant = false;
+                        break;
+                    }
+                }
+
+                if(consonant) return true;
             }
         }
 
@@ -448,6 +491,8 @@ public class Porter {
 
     // Check if stem ends with cvc, and the second c is not w, x, or y.
     private static boolean conditionO(char[] input) {
+        if(input.length < 3) return false;
+
         char[] vowels = {'a', 'e', 'i', 'o', 'u'};
         char[] consonants = {'w', 'x', 'y'}; // Consonants the last letter cannot be.
 
