@@ -56,6 +56,6 @@ It may be necessary to explicitly state to used Java preview features in your ID
 Run -> Edit Configurations -> Main -> Modify Options -> Add VM Options.
 In the new "VM Options" text box include "--enable-preivew".
 
-Then, in the Settings:
+Then, in the Settings:<br>
 File -> Settings -> Build, Execution, Deployment -> Compiler -> Java Compiler.
 In the "Additional Command Line Parameters" text box include "--enable-preview".
