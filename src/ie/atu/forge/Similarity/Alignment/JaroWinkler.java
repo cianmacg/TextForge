@@ -13,7 +13,7 @@ public class JaroWinkler {
      *
      * @param s1 The subject string (character array).
      * @param s2 The query string (character array).
-     * @param p The scaling factor for shared prefixes (It is recommended to keep this value <= 0.25).
+     * @param p The scaling factor for shared prefixes (It is recommended to keep this value &lt;= 0.25).
      * @return The similarity ranging from 0 (completely dissimilar) to 1 (Identical).
      */
     public static double similarity(char[] s1, char[] s2, double p) {
@@ -51,7 +51,7 @@ public class JaroWinkler {
      *
      * @param s1 The subject string.
      * @param s2 The query string.
-     * @param p The scaling factor for shared prefixes (It is recommended to keep this value <= 0.25).
+     * @param p The scaling factor for shared prefixes (It is recommended to keep this value &lt;= 0.25).
      * @return The similarity ranging from 0 (completely dissimilar) to 1 (Identical)
      */
     public static double similarity(String s1, String s2, double p) {

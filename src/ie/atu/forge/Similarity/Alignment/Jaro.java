@@ -69,10 +69,24 @@ public class Jaro {
         return similarity(s1.toCharArray(), s2.toCharArray());
     }
 
+    /**
+     * Measures how distant two strings are based on matching characters within a certain distance and the number of transpositions.
+     *
+     * @param s1 The subject string (character array).
+     * @param s2 The query string (character array).
+     * @return The distance ranging from 0 (completely dissimilar) to 1 (identical).
+     */
     public static double distance(char[] s1, char[] s2) {
         return 1 - similarity(s1, s2);
     }
 
+    /**
+     * Measures how distant two strings are based on matching characters within a certain distance and the number of transpositions.
+     *
+     * @param s1 The subject string.
+     * @param s2 The query string.
+     * @return The distance ranging from 0 (completely dissimilar) to 1 (identical).
+     */
     public static double distance(String s1, String s2) {
         return 1 - similarity(s1, s2);
     }

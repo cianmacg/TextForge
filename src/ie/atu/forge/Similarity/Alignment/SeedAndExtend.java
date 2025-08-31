@@ -62,7 +62,6 @@ public class SeedAndExtend {
      * @param query The query string.
      * @param kmerLength The initial seed size.
      * @return An array of extensions (alignments) found between the subject and the query.
-     * @throws Exception
      */
     public static Extension[] align(String subject, String query, int kmerLength) {
         if(subject == null || subject.isEmpty() || query == null || query.isEmpty() || kmerLength <= 0) return new Extension[0];
