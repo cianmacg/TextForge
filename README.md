@@ -47,3 +47,9 @@ jar cf forge-javadoc.jar -C javadoc .
 ```
 
 This should result in two .jar files (forge.jar and forge-javadoc.jar) that can be used in an IDE and imported into your project.
+
+## Enabling preview features
+It may be necessary to explicitly state to used Java preview features in your IDE. For IntelliJ, this can be done by editing the run configuration.
+
+Run -> Edit Configurations -> Main -> Modify Options -> Add VM Options.
+In the new "VM Options" text box include "--enable-preivew".
