@@ -3,7 +3,7 @@
 TextForge is a Java library designed for **NLP preprocessing** and **text similarity** tasks.  
 The project aims to provide a set of efficient and easy-to-use tools for researchers and developers working with natural language processing.
 
-<a href="https://www.youtube.com/watch?v=6r2Q-5_M9oQ">The video demonstration of TextForge can be viewed here</a>.
+<a href="https://youtu.be/kAKj-nN3J40">The video demonstration of TextForge can be viewed here</a>.
 
 ---
 
