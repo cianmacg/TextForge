@@ -126,14 +126,16 @@ public class Porter {
         ss -> ss
         s ->
          */
+        if(input.length == 0) return input;
+
         char[] result;
 
         if(input[input.length - 1] == 's') {
             // 'ss' endings aren't removed. This is here to prevent over-stemming. Without this, the last 's' would be removed. Don't want that.
-            if(input[input.length - 2] == 's') {
+            if(input.length > 1 && input[input.length - 2] == 's') {
                 return input;
             }
-            else if(input[input.length - 2] == 'e') {
+            else if(input.length > 3 && input[input.length - 2] == 'e') {
                 // Both 'ies' and 'sses' endings remove the last 2 characters from the word.
                 if(input[input.length - 3] == 'i' || (input[input.length - 3] == 's' && input[input.length - 4] == 's')) {
                     result = new char[input.length - 2];
@@ -158,6 +160,8 @@ public class Porter {
         ed ->
         ing ->
          */
+        if(input.length == 0) return input;
+
         char[] result;
 
         if(input.length > 2 && (input[input.length - 2] == 'e' && input[input.length - 1] == 'd')) {
@@ -201,6 +205,8 @@ public class Porter {
 
     // If 'ed' or 'ing' are removed in step_1b, do this.
     private static char[] sub1B(char[] input) {
+        if(input.length == 0) return input;
+
         char[] result;
 
         // If the string ending is 'at', 'bl', or 'iz', add an 'e' to the end of it.
@@ -232,6 +238,8 @@ public class Porter {
     }
 
     private static char[] step1C(char[] input) {
+        if(input.length == 0) return input;
+
         char[] result;
 
         char[] inputWithoutY = new char[input.length - 1];
@@ -272,6 +280,7 @@ public class Porter {
                 break;
             }
         }*/
+        if(input.length == 0) return input;
 
         // The largest step2 ending is 7 characters, begin with that. The minimum is size 3
         for(int i = 7; i > 2; i--) {
@@ -301,6 +310,8 @@ public class Porter {
     Same idea as step 2, but using different endings (i.e. a different map).
      */
     private static char[] step3(char[] input) {
+        if(input.length == 0) return input;
+
         // The largest step3 ending is 5 characters, begin with that. The minimum is size 3
         for(int i = 5; i > 2; i--) {
             if(input.length < i) continue;
@@ -325,6 +336,8 @@ public class Porter {
     }
 
     private static char[] step4(char[] input) {
+        if(input.length == 0) return input;
+
         // The largest step4 ending is 5 characters, begin with that. The minimum is size 2
         for(int i = 5; i > 1; i--) {
             if(input.length < i) continue;
@@ -349,6 +362,8 @@ public class Porter {
     }
 
     private static char[] step5A(char[] input) {
+        if(input.length == 0) return input;
+
         if(input[input.length - 1] == 'e') {
             char[] stem = new char[input.length - 1];
             System.arraycopy(input, 0, stem, 0, stem.length);
@@ -364,6 +379,8 @@ public class Porter {
     }
 
     private static char[] step5B(char[] input) {
+        if(input.length == 0) return input;
+
         char[] stem = new char[input.length - 1];
         System.arraycopy(input, 0, stem, 0, stem.length);
         int m = measure(stem);
@@ -377,7 +394,7 @@ public class Porter {
     }
 
     private static int measure(char[] input) {
-        if(input.length <= 0) return 0;
+        if(input.length == 0) return 0;
 
         char[] chars = Arrays.copyOf(input, input.length);
 
