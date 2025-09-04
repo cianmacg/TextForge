@@ -528,6 +528,8 @@ public class Lovins {
 
     // Minimum stem length == 4 after 'sαα', elsewhere minimum stem length == 3. (where 'α' is any letter)
     private static boolean conditionN(char[] input) {
+        if(input.length < 4) return false;
+
         if(input[input.length - 3] == 's') {
             return input.length >= 4;
         } else {
@@ -582,7 +584,7 @@ public class Lovins {
 
     // Remove ending only after 'l', 'i', or 'uαe' (where 'α' is any letter).
     private static boolean conditionX(char[] input) {
-        return input[input.length - 1] == 'l' || input[input.length - 1] == 'i' || (input[input.length - 3] == 'u' && input[input.length - 1] == 'e');
+        return input[input.length - 1] == 'l' || input[input.length - 1] == 'i' || (input.length > 4 && input[input.length - 3] == 'u' && input[input.length - 1] == 'e');
     }
 
     // Remove ending only after 'in'.
@@ -619,7 +621,7 @@ public class Lovins {
             }
 
             if(input[input.length - 3] == 'm' && input[input.length - 2] == 'e') return false;
-            else if (input[input.length - 4] == 'r' && input[input.length - 3] == 'y' && input[input.length - 2] == 's') return false;
+            else if (input.length > 4 && (input[input.length - 4] == 'r' && input[input.length - 3] == 'y' && input[input.length - 2] == 's')) return false;
         }
 
         return false;
@@ -776,7 +778,7 @@ public class Lovins {
                     }
                 }
                 // her -> hes except following p, t
-                if(stemLength >= 3 && input[stemLength - 3] == 'h' && input[stemLength - 2] == 'e' && !(input[stemLength - 4] == 'p' || input[stemLength - 4] == 't')) {
+                if(stemLength > 3 && input[stemLength - 3] == 'h' && input[stemLength - 2] == 'e' && !(input[stemLength - 4] == 'p' || input[stemLength - 4] == 't')) {
                     char[] result = new char[stemLength];
                     System.arraycopy(input, 0, result, 0, stemLength);
                     result[result.length - 1] = 's';
@@ -804,7 +806,7 @@ public class Lovins {
                     // dex -> dic
                     // pex -> pic
                     // tex -> tic
-                    if(stemLength >= 3 && input[stemLength - 3] == 'b' || input[stemLength - 3] == 'd' || input[stemLength - 3] == 'p' || input[stemLength - 3] == 't') {
+                    if(stemLength > 4 && (input[stemLength - 3] == 'b' || input[stemLength - 3] == 'd' || input[stemLength - 3] == 'p' || input[stemLength - 3] == 't')) {
                         char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 2] = 'i';
@@ -874,7 +876,7 @@ public class Lovins {
                         return result;
                     }
                     // end -> ens except following s
-                    if(stemLength >= 3 && input[stemLength - 3] == 'e' && !(input[stemLength - 4] == 's')) {
+                    if(stemLength >= 4 && input[stemLength - 3] == 'e' && !(input[stemLength - 4] == 's')) {
                         char[] result = new char[stemLength];
                         System.arraycopy(input, 0, result, 0, result.length);
                         result[result.length - 1] = 's';
