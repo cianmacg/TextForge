@@ -205,7 +205,7 @@ public class Porter {
 
     // If 'ed' or 'ing' are removed in step_1b, do this.
     private static char[] sub1B(char[] input) {
-        if(input.length == 0) return input;
+        if(input.length <= 2) return input;
 
         char[] result;
 
