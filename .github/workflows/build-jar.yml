@@ -1,0 +1,41 @@
+name: Build Raw JAR with Java 24 Previews
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 24 ☕
+        uses: actions/setup-java@v4
+        with:
+          # Request Java 24 (this will fetch the latest available build)
+          java-version: '24' 
+          distribution: 'temurin' 
+
+      - name: Compile and Package (with Previews Enabled)
+        run: |
+          # 1. Create directory for compiled classes
+          mkdir -p bin
+
+          # 2. Compile: Use --release 24 and --enable-preview flags
+          # Note: The -Xlint:preview is optional, but adds a useful warning.
+          javac -d bin \
+            --release 24 \
+            --enable-preview \
+            -Xlint:preview \
+            $(find src -name "*.java")
+
+          # 3. Package the contents of 'bin' into a JAR file
+          jar cvf my-library.jar -C bin .
+
+      - name: Upload JAR as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-library-jar
+          path: my-library.jar
+          retention-days: 5
