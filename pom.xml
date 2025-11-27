@@ -83,8 +83,11 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <release>24</release>
+                    <sourceFileIncludes>
+                        <sourceFileInclude>**/*.java</sourceFileInclude>
+                    </sourceFileIncludes>
 
+                    <release>24</release>
                     <doclint>none</doclint>
 
                     <additionalOptions>
