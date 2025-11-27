@@ -185,7 +185,7 @@ public class SeedAndExtendTest {
         String subject = "VVVVVME";
         String query = "MEVVVVV";
         SmithWaterman sw = new SmithWaterman();
-        sw.loadScoringMatrix("./src/ScoringMatrices/BLOSUM45.txt");
+        sw.loadScoringMatrix("./src/main/resources/ScoringMatrices/BLOSUM45.txt");
 
         Extension[] results = SeedAndExtend.align(subject, query, 2, sw, 10);
         assertTrue(results.length > 0, "No extensions found — SW may discard the original seed.");

@@ -101,6 +101,6 @@ public class SmithWatermanTest {
     }
 
     private Map<String, Integer> loadBlosum45Stub() throws IOException {
-        return MatrixLoader.load("./ScoringMatrices/BLOSUM45.txt");
+        return MatrixLoader.load("./src/main/resources/ScoringMatrices/BLOSUM45.txt");
     }
 }
