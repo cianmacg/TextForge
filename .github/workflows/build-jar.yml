@@ -34,7 +34,7 @@ jobs:
             $JAVA_FILES
 
           # 3. Package the contents of 'bin' into a JAR file
-          jar cvf my-library.jar -C bin .
+          jar cvf textforge.jar -C bin .
 
       - name: Upload JAR as Artifact
         uses: actions/upload-artifact@v4
