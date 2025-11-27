@@ -1,0 +1,30 @@
+name: Publish Library to Maven
+
+# CRITICAL: Update the trigger to point to your new branch
+on:
+  push:
+    branches: [ "mavenification" ] # Trigger the workflow on pushes to this branch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Needed for publishing to GitHub Packages
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 24
+        uses: actions/setup-java@v4
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+          server-id: github # Matches <id>github</id> in your pom.xml
+
+      - name: Compile, Test, and Deploy 🚀
+        # Maven automatically handles finding source files, compiling, running tests,
+        # and creating the JAR before deploying.
+        run: mvn deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
