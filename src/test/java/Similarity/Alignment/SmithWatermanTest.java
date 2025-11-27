@@ -1,7 +1,7 @@
 package test.java.Similarity.Alignment;
 
-import ie.atu.forge.Similarity.Alignment.SmithWaterman;
-import ie.atu.forge.ToolBox.MatrixLoader;
+import main.java.ie.atu.forge.Similarity.Alignment.SmithWaterman;
+import main.java.ie.atu.forge.ToolBox.MatrixLoader;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

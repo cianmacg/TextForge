@@ -1,6 +1,6 @@
 package test.java.Similarity.AlignmentFree;
 
-import ie.atu.forge.Similarity.AlignmentFree.Chebyshev;
+import main.java.ie.atu.forge.Similarity.AlignmentFree.Chebyshev;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;

@@ -1,6 +1,6 @@
 package test.java.Tokenisers;
 
-import ie.atu.forge.Tokenisers.BPE;
+import main.java.ie.atu.forge.Tokenisers.BPE;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,6 @@
 package test.java.Vectorisers;
 
-import ie.atu.forge.Vectorisers.BagOfWords;
+import main.java.ie.atu.forge.Vectorisers.BagOfWords;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,6 +1,6 @@
 package test.java.Similarity.AlignmentFree;
 
-import ie.atu.forge.Similarity.AlignmentFree.SorensenDice;
+import main.java.ie.atu.forge.Similarity.AlignmentFree.SorensenDice;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;

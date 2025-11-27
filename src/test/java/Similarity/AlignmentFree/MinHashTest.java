@@ -1,6 +1,6 @@
 package test.java.Similarity.AlignmentFree;
 
-import ie.atu.forge.Similarity.AlignmentFree.MinHash;
+import main.java.ie.atu.forge.Similarity.AlignmentFree.MinHash;
 
 import org.junit.jupiter.api.Test;
 import java.util.*;

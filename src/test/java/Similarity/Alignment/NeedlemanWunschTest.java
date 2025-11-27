@@ -2,8 +2,8 @@ package test.java.Similarity.Alignment;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import ie.atu.forge.Similarity.Alignment.NeedlemanWunsch;
-import ie.atu.forge.ToolBox.MatrixLoader;
+import main.java.ie.atu.forge.Similarity.Alignment.NeedlemanWunsch;
+import main.java.ie.atu.forge.ToolBox.MatrixLoader;
 
 import java.io.IOException;
 import java.util.*;

@@ -1,6 +1,6 @@
 package test.java.Similarity.Alignment;
 
-import ie.atu.forge.Similarity.Alignment.JaroWinkler;
+import main.java.ie.atu.forge.Similarity.Alignment.JaroWinkler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;

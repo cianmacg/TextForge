@@ -1,6 +1,6 @@
 package test.java.Vectorisers;
 
-import ie.atu.forge.Vectorisers.TFIDF;
+import main.java.ie.atu.forge.Vectorisers.TFIDF;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

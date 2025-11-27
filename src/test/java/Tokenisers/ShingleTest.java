@@ -1,6 +1,6 @@
 package test.java.Tokenisers;
 
-import ie.atu.forge.Tokenisers.Shingle;
+import main.java.ie.atu.forge.Tokenisers.Shingle;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;

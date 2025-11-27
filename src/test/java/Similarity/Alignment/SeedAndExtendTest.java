@@ -1,8 +1,8 @@
 package test.java.Similarity.Alignment;
 
-import ie.atu.forge.Similarity.Alignment.SeedAndExtend;
-import ie.atu.forge.Similarity.Alignment.Extension;
-import ie.atu.forge.Similarity.Alignment.SmithWaterman;
+import main.java.ie.atu.forge.Similarity.Alignment.SeedAndExtend;
+import main.java.ie.atu.forge.Similarity.Alignment.Extension;
+import main.java.ie.atu.forge.Similarity.Alignment.SmithWaterman;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;

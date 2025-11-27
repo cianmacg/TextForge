@@ -1,6 +1,6 @@
 package test.java.Stemmers;
 
-import ie.atu.forge.Stemmers.Lancaster;
+import main.java.ie.atu.forge.Stemmers.Lancaster;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;

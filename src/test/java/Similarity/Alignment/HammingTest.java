@@ -1,6 +1,6 @@
 package test.java.Similarity.Alignment;
 
-import ie.atu.forge.Similarity.Alignment.Hamming;
+import main.java.ie.atu.forge.Similarity.Alignment.Hamming;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
