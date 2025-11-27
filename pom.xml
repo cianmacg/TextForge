@@ -83,12 +83,12 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <release>24</release>
+
                     <doclint>none</doclint>
 
                     <additionalOptions>
                         <additionalOption>--enable-preview</additionalOption>
-                        <additionalOption>--release</additionalOption>
-                        <additionalOption>24</additionalOption>
                     </additionalOptions>
                 </configuration>
             </plugin>
