@@ -83,15 +83,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>null</source>
-                    <target>null</target>
-
                     <doclint>none</doclint>
-
+                    <additionalJOption>
+                        --release 24
+                    </additionalJOption>
                     <additionalOptions>
                         <additionalOption>--enable-preview</additionalOption>
-                        <additionalOption>--release</additionalOption>
-                        <additionalOption>24</additionalOption>
                     </additionalOptions>
                 </configuration>
             </plugin>
