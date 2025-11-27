@@ -51,9 +51,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version> <configuration>
-                <argLine>--enable-preview</argLine>
-            </configuration>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>--enable-preview</argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -82,6 +83,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <source>null</source>
+                    <target>null</target>
+
                     <doclint>none</doclint>
 
                     <additionalOptions>
