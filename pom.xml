@@ -83,12 +83,15 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+
                     <doclint>none</doclint>
-                    <additionalJOption>
-                        --release 24
-                    </additionalJOption>
+
                     <additionalOptions>
                         <additionalOption>--enable-preview</additionalOption>
+                        <additionalOption>--release</additionalOption>
+                        <additionalOption>24</additionalOption>
                     </additionalOptions>
                 </configuration>
             </plugin>
