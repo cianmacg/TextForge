@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 
 // I used this for reference: https://www.geeksforgeeks.org/dsa/introduction-to-levenshtein-distance/
 

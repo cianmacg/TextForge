@@ -1,6 +1,6 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 
-import ie.atu.forge.ToolBox.MatrixLoader;
+import main.java.ie.atu.forge.ToolBox.MatrixLoader;
 
 import java.io.IOException;
 import java.util.Map;

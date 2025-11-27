@@ -1,4 +1,4 @@
-package ie.atu.forge.Stemmers;
+package main.java.ie.atu.forge.Stemmers;
 
 import java.util.Arrays;
 import java.util.HashMap;

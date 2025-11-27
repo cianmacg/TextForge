@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 
 /**
  *  Hamming distance is the number of substitutions needed to transform one string to another.

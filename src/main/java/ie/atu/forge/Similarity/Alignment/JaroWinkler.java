@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 
 /**
  * Extends Jaro Similarity by boosting scores for strings that share a common prefix.

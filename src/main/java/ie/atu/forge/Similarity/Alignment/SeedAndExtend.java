@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 
 import java.util.*;
 import java.util.concurrent.StructuredTaskScope;

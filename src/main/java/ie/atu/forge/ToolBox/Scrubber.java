@@ -1,4 +1,4 @@
-package ie.atu.forge.ToolBox;
+package main.java.ie.atu.forge.ToolBox;
 
 // This class should clean up text. Just converts everything to lower case and removes 'special' characters such as '"','.', and '!'.
 

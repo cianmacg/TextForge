@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 /**
  * A similarity measure that returns a range (0 - 1). Hangles matches and transpositions.
  *

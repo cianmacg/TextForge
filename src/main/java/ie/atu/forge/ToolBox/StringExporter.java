@@ -1,4 +1,4 @@
-package ie.atu.forge.ToolBox;
+package main.java.ie.atu.forge.ToolBox;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

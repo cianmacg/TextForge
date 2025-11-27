@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 
 /**
  * Extension of Levenshtein distance that also measures transpositions. A transposition occurs between adjacent characters.

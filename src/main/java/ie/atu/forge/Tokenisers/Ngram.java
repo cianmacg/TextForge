@@ -1,4 +1,4 @@
-package ie.atu.forge.Tokenisers;
+package main.java.ie.atu.forge.Tokenisers;
 
 // Character level N-gram tokenisation. For word N-grams, use Shingle.
 

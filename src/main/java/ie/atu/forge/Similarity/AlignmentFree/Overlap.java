@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.AlignmentFree;
+package main.java.ie.atu.forge.Similarity.AlignmentFree;
 
 import java.util.HashSet;
 import java.util.Map;

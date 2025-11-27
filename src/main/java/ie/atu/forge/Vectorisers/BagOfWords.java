@@ -1,4 +1,4 @@
-package ie.atu.forge.Vectorisers;
+package main.java.ie.atu.forge.Vectorisers;
 
 import java.util.*;
 

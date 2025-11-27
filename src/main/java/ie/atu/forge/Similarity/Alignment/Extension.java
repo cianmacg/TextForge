@@ -1,4 +1,4 @@
-package ie.atu.forge.Similarity.Alignment;
+package main.java.ie.atu.forge.Similarity.Alignment;
 
 // A record for each extension. This helps prevent duplicates.
 public record Extension (int subjectPos, int queryPos, String text) {

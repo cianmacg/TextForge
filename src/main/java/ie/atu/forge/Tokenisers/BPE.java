@@ -1,4 +1,4 @@
-package ie.atu.forge.Tokenisers;
+package main.java.ie.atu.forge.Tokenisers;
 
 import java.io.*;
 import java.util.*;
