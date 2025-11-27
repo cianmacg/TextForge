@@ -13,22 +13,25 @@ jobs:
       - name: Set up JDK 24 ☕
         uses: actions/setup-java@v4
         with:
-          # Request Java 24 (this will fetch the latest available build)
           java-version: '24' 
           distribution: 'temurin' 
 
-      - name: Compile and Package (with Previews Enabled)
+      - name: Compile and Package (Fixing Tests & Enabling Previews)
         run: |
           # 1. Create directory for compiled classes
           mkdir -p bin
 
           # 2. Compile: Use --release 24 and --enable-preview flags
-          # Note: The -Xlint:preview is optional, but adds a useful warning.
+          #    CRITICAL FIX: Use the '-not -path' filter to exclude the 'src/Tests' directory.
+          JAVA_FILES=$(find src \
+                       -name "*.java" \
+                       -not -path "src/Tests/*")
+
           javac -d bin \
             --release 24 \
             --enable-preview \
             -Xlint:preview \
-            $(find src -name "*.java")
+            $JAVA_FILES
 
           # 3. Package the contents of 'bin' into a JAR file
           jar cvf my-library.jar -C bin .
